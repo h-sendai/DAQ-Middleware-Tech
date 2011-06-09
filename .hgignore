@@ -1,0 +1,12 @@
+syntax: glob
+.depend
+*.o
+*.d
+*~
+*.aux
+*.log
+*.dvi
+*.toc
+*.ps
+*.pdf
+*.old
