@@ -32,32 +32,32 @@
 
 \begin{document}
 
-\title{ \daqmwcurrent ���Ѳ����\\
-%  ��1��(June 2009)
-%  ��2��(Oct. 2009)
-%  ��3��(Jun  2010)
+\title{ \daqmwcurrent 技術解説書\\
+%  第1版(June 2009)
+%  第2版(Oct. 2009)
+%  第3版(Jun  2010)
 }
-\author{��Ȱ���}
+\author{仲吉一男}
 \date{
 \vspace{0.1cm}
-  KEK�ǳ˸�\\
+  KEK素核研\\
 \vspace{0.4cm}
 %  \\July 2009\\
 %  Oct. 2009 (revised)
-  2010ǯ 8�� 
+  2010年 8月 
 %\vspace{0.5cm}
-%{\small �⥨�ͥ륮����®�︦�浡��}\\ 
+%{\small 高エネルギー加速器研究機構}\\ 
 %\vspace{0.1cm} 
-%{\small ��γ�Ҹ��ҳ˸����}
+%{\small 素粒子原子核研究所}
 }
 \maketitle
 %\thispagestyle{empty}
 \begin{abstract}
-����ʸ��ϥ桼������DAQ����ݡ��ͥ�Ȥ�ȯ����ݤ�ɬ�פȤʤ�
- \daqmwcurrent �λ��ͤˤĤ��Ƶ���Ū�ʲ���򤹤뤿��˽񤫤�ޤ�����
-��\ref{arch}���DAQ�ߥɥ륦�����Υ������ƥ�����γ��פ���������
-��\ref{daqcomp}���DAQ����ݡ��ͥ�Ȥλ��ͤˤĤ����������ޤ���
-��\ref{daqop}���DAQ���ڥ졼���λ��ͤ��������ޤ���
+この文書はユーザーがDAQコンポーネントを開発する際に必要となる
+ \daqmwcurrent の仕様について技術的な解説をするために書かれました。
+第\ref{arch}節でDAQミドルウェアのアーキテクチャの概要を説明し、
+第\ref{daqcomp}節でDAQコンポーネントの仕様について説明します。
+第\ref{daqop}節でDAQオペレータの仕様を説明します。
 
 \end{abstract}
 {\rm }
@@ -73,126 +73,126 @@
    \includegraphics[width=70mm]{daqmw-rtmw.eps}
   \end{center}
   \vspace{-7mm}
-  \caption{\footnotesize DAQ�ߥɥ륦������RT�ߥɥ륦�����δط�}
+  \caption{\footnotesize DAQミドルウェアとRTミドルウェアの関係}
   \label{daqmw.fig}
 \end{wrapfigure}
 
-\section{�Ϥ����}\label{intro}
-����ʸ��ϥ桼������DAQ����ݡ��ͥ�Ȥ�ȯ����ݤ�ɬ�פȤʤ�
-\daqmwcurrent �λ��ͤˤĤ��Ƶ���Ū�ʲ���򤹤뤿��˽񤫤�ޤ�����
-��\ref{arch}���DAQ�ߥɥ륦�����Υ������ƥ�����γ��ס���\ref{daqcomp}���
-DAQ����ݡ��ͥ�Ȥλ��ͤˤĤ����������ޤ�����\ref{daqop}���DAQ���ڥ졼���λ��ͤ��������ޤ���
+\section{はじめに}\label{intro}
+この文書はユーザーがDAQコンポーネントを開発する際に必要となる
+\daqmwcurrent の仕様について技術的な解説をするために書かれました。
+第\ref{arch}節でDAQミドルウェアのアーキテクチャの概要、第\ref{daqcomp}節で
+DAQコンポーネントの仕様について説明します。第\ref{daqop}節でDAQオペレータの仕様を説明します。
 
-DAQ(Data AQuisition)�ߥɥ륦�����ϡ��ͥåȥ��ʬ���Ķ��ǥǡ��������ѥ��եȥ��������ư�
-�˹��ۤ��뤿��Υ��եȥ��������ե졼�����Ǥ����桼���ϡ�DAQ����ݡ��ͥ�ȤȸƤФ��
-���եȥ�����������ݡ��ͥ�Ȥ��Ȥ߹�碌��DAQ�����ƥ���ۤ��ޤ���
+DAQ(Data AQuisition)ミドルウエアは、ネットワーク分散環境でデータ収集用ソフトウェアを容易
+に構築するためのソフトウェア・フレームワークです。ユーザは、DAQコンポーネントと呼ばれる
+ソフトウェア・コンポーネントを組み合わせてDAQシステムを構築します。
 
-DAQ�ߥɥ륦�����μ����ϡ�RT(Robot Technology) �ߥɥ륦����\cite{RTM}���Ѥ�١����ˤ��Ƥ��ޤ���
-RT�ߥɥ륦�����ϡ���Ω����ˡ�ͻ��ȵ������縦���(AIST)�ˤ�긦�桦��ȯ���Ԥ��Ƥ��ޤ���
-RT�ߥɥ륦�������͡��ʥ��ܥå����ǡ�RT����ݡ��ͥ�ȡˤ��̿��ͥåȥ����𤷤Ƽ�ͳ��
-�Ȥ߹�碌�뤳�Ȥǡ����ܥåȥ����ƥ�ι��ۤ��ǽ�ˤ���ͥåȥ��ʬ������ݡ��ͥ�Ȳ�
-���Ѥˤ�붦�̥ץ�åȥե�����Ǥ���
-RT�ߥɥ륦�����δ��ܥ��եȥ������Ǥ���RT����ݡ��ͥ�Ȥϡ����եȥ������ι��ɸ�ಽ����
-OMG(Object Management Group)��ɸ����ͤ����򤵤���ɸ�൬�� 
-"Robotic Technology Component Specification"\cite{RTM-OMG}�Ȥʤ�ޤ�����
-�桹�ϡ�RT����ݡ��ͥ�Ȥ�١����Ȥ�����ܥåȡ��ͥåȥ��ʬ����ǥ�ϡ��ǡ���������
-��Ŭ�Ѳ�ǽ�Ǥ���ȹͤ�2006ǯ����AIST�ȶ�Ʊ����򳫻Ϥ������μ¸���ǽ���θ�Ƥ��Ԥä�
-���ޤ���\cite{CHEP06}��%%\cite{CHEP06,RT07}��
-���η�̡�RT����ݡ��ͥ�Ȥ˰�����ĥ��Ԥ����Ȥǥǡ��������ˤ����Ƥ�Ŭ�Ѳ�ǽ�Ǥ���
-�Ȥ��������˻��ޤ�����
-RT�ߥɥ륦�����ϡ�OMG�ˤ����ɸ�ಽ��Ⳬȯ��³���Ƥ��ޤ�������ʸ��Ǥϡ�RT�ߥɥ륦����
-�λ������ˤ������Ǥ���
-\rtmcurrent (\verb|C++|�ǡ�
-���˳�ȯ���줿
-\daqmwcurrent(�ʹ�DAQ�ߥɥ륦����)
-�ˤĤ����������ޤ���
+DAQミドルウエアの実装は、RT(Robot Technology) ミドルウェア\cite{RTM}技術をベースにしています。
+RTミドルウエアは、独立行政法人産業技術総合研究所(AIST)により研究・開発が行われています。
+RTミドルウェアは様々なロボット要素（RTコンポーネント）を通信ネットワークを介して自由に
+組み合わせることで、ロボットシステムの構築を可能にするネットワーク分散コンポーネント化
+技術による共通プラットフォームです。
+RTミドルウエアの基本ソフトウェアであるRTコンポーネントは、ソフトウエアの国際標準化団体
+OMG(Object Management Group)で標準仕様が採択され国際標準規格 
+"Robotic Technology Component Specification"\cite{RTM-OMG}となりました。
+我々は、RTコンポーネントをベースとするロボット・ネットワーク分散モデルは、データ収集に
+も適用可能であると考え2006年からAISTと共同研究を開始し、その実現可能性の検討を行って
+きました\cite{CHEP06}。%%\cite{CHEP06,RT07}。
+その結果、RTコンポーネントに一部拡張を行うことでデータ収集においても適用可能である
+という結論に至りました。
+RTミドルウェアは、OMGによる国際標準化後も開発が続いています。この文書では、RTミドルウェア
+の産総研による実装である
+\rtmcurrent (\verb|C++|版）
+を基に開発された
+\daqmwcurrent(以降DAQミドルウェア)
+について説明します。
 
-�� \ref{daqmw.fig}��RT�ߥɥ륦������DAQ�ߥɥ륦�����δط��򼨤�����ǰ�ޤ�
-�����ޤ���DAQ����ݡ��ͥ�Ȥ����Ҥ�RT����ݡ��ͥ�Ȥ��ĥ�����߷פ���Ƥ��ޤ������ʤ����
-(1)�ǡ���������ɬ�פʥ��ޥ�ɤˤ��������ܤμ�����(2)RT����ݡ��ͥ�ȤΥ����ӥ��ݡ��Ȥ�
-���Ѥ������ޥ��/���ơ�������������ǽ�μ����Ǥ���
-�ޤ�RT����ݡ��ͥ�Ȥ�������Ѥ����ǡ��������ϥݡ��Ȥˤ��DAQ����ݡ��ͥ�ȴ֤ǥǡ���ž��
-��Ԥ��ޤ���
-DAQ���ڥ졼���ϡ�DAQ����ݡ��ͥ�Ȥ����椹�뤿��Υ���ȥ�����Ǥ���
-�桼������֥������ȡפ�֥��ȥåספȤ������ޥ�ɤ�����������DAQ����ݡ��ͥ�Ȥ�
-�������ޤ���
-�ޤ���XMLʸ��ˤ��DAQ�����ƥ�Υ���ե����졼�����ǽ��XML/HTTP�ץ��ȥ������Ѥ���
-�����ƥࡦ���󥿡��ե�������ǽ����äƤ��ޤ���
+図 \ref{daqmw.fig}にRTミドルウェアとDAQミドルウェアの関係を示した概念図を
+示します。DAQコンポーネントは前述のRTコンポーネントを拡張して設計されています。すなわち、
+(1)データ収集に必要なコマンドによる状態遷移の実装、(2)RTコンポーネントのサービスポートを
+利用したコマンド/ステータス送受信機能の実装です。
+またRTコンポーネントから受け継いだデータ入出力ポートによりDAQコンポーネント間でデータ転送
+を行います。
+DAQオペレータは、DAQコンポーネントを制御するためのコントローラです。
+ユーザから「スタート」や「ストップ」というコマンドを受け、それをDAQコンポーネントへ
+送信します。
+また、XML文書によるDAQシステムのコンフィグレーション機能、XML/HTTPプロトコルを使用した
+システム・インターフェイス機能を持っています。
 
-DAQ�ߥɥ륦�����γ��פΤߤ��Τꤿ�����ϡ���DAQ�ߥɥ륦��������\cite{OVERVIEW}�פ�������������
+DAQミドルウェアの概要のみを知りたい方は、「DAQミドルウェア概要\cite{OVERVIEW}」をご覧ください。
 
-\section{DAQ�ߥɥ륦�����Υ������ƥ�����}\label{arch}
-DAQ�ߥɥ륦�����Υ������ƥ�����ˤĤ��Ʋ����ι��ܤ������򤷤ޤ���
+\section{DAQミドルウェアのアーキテクチャ}\label{arch}
+DAQミドルウェアのアーキテクチャについて下記の項目の説明をします。
 \begin{itemize}
-\item ���եȥ�����������ݡ��ͥ�ȡ���ǥ�(\ref{compmodel})
-\item �������ܥ�ǥ�(\ref{statemodel})
-\item ��󥳥�ȥ����롦��ǥ�(\ref{runctrl})
-\item �ǡ���ž����ǽ(\ref{data-tarans})
-\item ���ޥ�ɡ����ơ������̿���ǽ(\ref{status})
-\item �����ƥࡦ����ե����졼�����ǽ(\ref{config})
-\item �����ƥࡦ���󥿡��ե�������ǽ(\ref{sysint})
-\item ���֥ѥ�᡼�����굡ǽ(\ref{cond})
-\item ��⡼�ȥ֡��ȵ�ǽ(\ref{remoteboot})
+\item ソフトウェア・コンポーネント・モデル(\ref{compmodel})
+\item 状態遷移モデル(\ref{statemodel})
+\item ランコントロール・モデル(\ref{runctrl})
+\item データ転送機能(\ref{data-tarans})
+\item コマンド・ステータス通信機能(\ref{status})
+\item システム・コンフィグレーション機能(\ref{config})
+\item システム・インターフェイス機能(\ref{sysint})
+\item 装置パラメータ設定機能(\ref{cond})
+\item リモートブート機能(\ref{remoteboot})
 \end{itemize}
 
-\subsection{���եȥ�����������ݡ��ͥ�ȡ���ǥ�}\label{compmodel}
-DAQ����ݡ��ͥ�Ȥϡ�DAQ�ߥɥ륦�����ˤ����륽�եȥ������δ���ñ�̤Ǥ���
-�����ʵ�ǽ��DAQ����ݡ��ͥ�Ȥ��Ȥ߹�碌�뤳�Ȥǡ������DAQ�����ƥ���ۤǤ��ޤ���
-���եȥ�����������ݡ��ͥ�Ȼظ��Υե졼�������Ѥ��뤳�Ȥǡ����Τ��Ȥ����ԤǤ��ޤ���
+\subsection{ソフトウェア・コンポーネント・モデル}\label{compmodel}
+DAQコンポーネントは、DAQミドルウェアにおけるソフトウェアの基本単位です。
+色々な機能のDAQコンポーネントを組み合わせることで、柔軟なDAQシステムを構築できます。
+ソフトウェア・コンポーネント指向のフレームワークを用いることで、次のことが期待できます。
 \begin{itemize}
-\item �����DAQ�����ƥ�ι��ۤμ¸�
-%%\item �ޥ������CPU ��ˤ�����ʣ���Υ���ݡ��ͥ�Ȥθ�Ψư��¸�
-\item ���եȥ�������ȯ��Ψ�θ���
-\item ���եȥ��������������θ���
-\item ���եȥ��������ƥʥ��ư����θ���
+\item 柔軟なDAQシステムの構築の実現
+%%\item マルチコアCPU 上において複数のコンポーネントの効率動作実現
+\item ソフトウェア開発効率の向上
+\item ソフトウェア再利用性の向上
+\item ソフトウェアメンテナンス容易性の向上
 \end{itemize}
 
-���ҤΤ褦��RT�ߥɥ륦�����ˤ����륽�եȥ������δ���ñ�̤�RT����ݡ��ͥ�ȤǤ���
-���ܥåȥ����ƥ���ۤ��뤿��ˤϡ��������ΥǥХ������Ȥ߹�碌�Ƽ¸����ޤ�����
-���ε�ǽ���Ǥ򥽥եȥ�����������ݡ��ͥ�ȤǼ¸�����ʣ���Ȥ߹�碌�뤳�Ȥˤ��
-�����ƥ���ۤ��뤳�Ȥ���ǽ�Ǥ���RT����ݡ��ͥ�ȤΥ������ƥ������
-��\ref{RT-component.fig}�˼����ޤ���
-DAQ����ݡ��ͥ�Ȥ����������ǽ��פ�RT����ݡ��ͥ�Ȥ����Ǥϰʲ��Τ�ΤǤ���
+前述のようにRTミドルウェアにおけるソフトウェアの基本単位がRTコンポーネントです。
+ロボットシステムを構築するためには、センサ等のデバイスを組み合わせて実現しますが、
+その機能要素をソフトウェア・コンポーネントで実現し、複数組み合わせることにより
+システムを構築することが可能です。RTコンポーネントのアーキテクチャを
+図\ref{RT-component.fig}に示します。
+DAQコンポーネントを説明する上で重要なRTコンポーネントの要素は以下のものです。
 \begin{itemize}
-\item ���֡ʥ��ơ��ȡ�
-\item Ǥ�դο��Υǡ������ϥݡ��ȡ�InPort��
-\item Ǥ�դο��Υǡ������ϥݡ��ȡ�OutPort��
-\item �桼���������ǽ�ʥ����ӥ��ݡ���
+\item 状態（ステート）
+\item 任意の数のデータ入力ポート（InPort）
+\item 任意の数のデータ出力ポート（OutPort）
+\item ユーザが定義可能なサービスポート
 \end{itemize}
-����¾�ε�ǽ�����ǤˤĤ��Ƥϡ�RT�ߥɥ륦�����Υڡ�����\cite{RTM, RTM-book}�򻲾Ȥ���
-����������RT����ݡ��ͥ�Ȥξ������ܥ�ǥ�ˤĤ��Ƥϸ�Ҥ��ޤ���
-InPort,  OutPort ��RT����ݡ��ͥ�ȴ֤�ή���ǡ������ȥ꡼��������ϥݡ��ȤǤ���
-Publisher/Subscriber��ǥ�˴�Ť�����ݡ��ͥ�ȴ֤Υǡ���������������ݲ����Ƥ��ޤ���
-DAQ����ݡ��ͥ�ȤǤ�Ʊ�ͤˡ�InPort,  OutPort��ǡ������������˻��Ѥ��Ƥ��ޤ���
-�����ӥ��ݡ��Ȥϥ桼����Ǥ�դΥ����ӥ����󥿡��ե�����������Ǥ���ݡ��ȤǤ���
-�֥����ӥ��ץ��Х����פϥ����ӥ����󶡤��뤿��Υ��󥿡��ե������ǡ֥����ӥ�
-���󥷥塼�ޡפϥ����ӥ������Ѥ��뤿��Υ��󥿡��ե������Ǥ���
-DAQ����ݡ��ͥ�ȤǤϡ����Υ����ӥ��ݡ��Ȥ����Ѥ���DAQ���ڥ졼����DAQ����ݡ��ͥ��
-�֤Υ��ޥ��/���ơ���������������������Ƥ��ޤ���
+その他の機能や要素については、RTミドルウェアのページ等\cite{RTM, RTM-book}を参照して
+ください。RTコンポーネントの状態遷移モデルについては後述します。
+InPort,  OutPort はRTコンポーネント間を流れるデータストリームの入出力ポートです。
+Publisher/Subscriberモデルに基づきコンポーネント間のデータの送受信を抽象化しています。
+DAQコンポーネントでも同様に、InPort,  OutPortをデータの送受信に使用しています。
+サービスポートはユーザが任意のサービスインターフェースを定義できるポートです。
+「サービスプロバイダ」はサービスを提供するためのインターフェースで「サービス
+コンシューマ」はサービスを利用するためのインターフェースです。
+DAQコンポーネントでは、このサービスポートを利用してDAQオペレータとDAQコンポーネント
+間のコマンド/ステータスの送受信を実装しています。
 \begin{figure}[htbp]
  \begin{center}
   \includegraphics[width=100mm]{RT-component.eps}
-  \caption{RT����ݡ��ͥ�ȤΥ������ƥ�����}
+  \caption{RTコンポーネントのアーキテクチャ}
   \label{RT-component.fig}
  \end{center}
 \end{figure}
 
-\subsection{�������ܥ�ǥ�}\label{statemodel}
-��\ref{rtc-state.fig}��RT����ݡ��ͥ�ȤΥ��ơ��ȥ��㡼�Ȥ򼨤��ޤ���RT����ݡ��ͥ�Ȥ�
-"Active", "Inactive", "Error"�Ȥ������ִ֤����ܤ��ޤ�����\ref{daq-state.fig}��DAQ
-����ݡ��ͥ�ȤΥ��ơ��ȥ��㡼�Ȥ򼨤��ޤ����桹�ιͤ������Ū��DAQ�����ƥ��4�Ĥξ��֡�
-���ʤ����"Loaded","Configured","Running","Paused"��RT����ݡ��ͥ�Ȥξ��֤���ľ��
-�ޥåԥ󥰤��뤳�ȤϤǤ��ʤ����ᡢRT����ݡ��ͥ�Ȥ�"Active"���֤Υ��֡����ơ��ȤȤ���
-�������ޤ���������ˤ�ꡢRT����ݡ��ͥ�Ȥξ������ܥ�ǥ���ѹ������� DAQ��ɬ�פ�
-���֤��ĥ���뤳�Ȥ��Ǥ��ޤ�����
-��\ref{command-state.fig}��DAQ����ݡ��ͥ�ȤΥ��ޥ�ɤˤ��������ܥ�ǥ�򼨤��ޤ���
+\subsection{状態遷移モデル}\label{statemodel}
+図\ref{rtc-state.fig}にRTコンポーネントのステートチャートを示します。RTコンポーネントは
+"Active", "Inactive", "Error"という状態間を遷移します。図\ref{daq-state.fig}にDAQ
+コンポーネントのステートチャートを示します。我々の考える一般的なDAQシステムの4つの状態、
+すなわち、"Loaded","Configured","Running","Paused"をRTコンポーネントの状態へ素直に
+マッピングすることはできないため、RTコンポーネントの"Active"状態のサブ・ステートとして
+実装しました。これにより、RTコンポーネントの状態遷移モデルを変更せずに DAQに必要な
+状態を拡張することができました。
+図\ref{command-state.fig}にDAQコンポーネントのコマンドによる状態遷移モデルを示します。
 \begin{itemize}
-\item DAQ����ݡ��ͥ�Ȥ���ư�����"Loaded"���֤Ȥʤ�ޤ���
-\item "Loaded"���֤Ǥ�"Configure"���ޥ�ɤˤ��DAQ����ݡ��ͥ�ȤΥѥ�᡼������������
-�Ԥ�"Configured"���֤ˤʤ�ޤ���
-\item "Configured"���֤Ǥ�"Start"���ޥ�ɤˤ�� "Running"���֤����ܤ��ޤ���
-\item "Running"���֤Ǥ� "Pause"���ޥ�ɤˤ�� "Paused"���֤����ܤ��ޤ���
-\item "Paused"���֤Ǥ� "Resume"���ޥ�ɤ�"Running"���֤����ܤ��ޤ���
+\item DAQコンポーネントが起動すると"Loaded"状態となります。
+\item "Loaded"状態では"Configure"コマンドによりDAQコンポーネントのパラメータの設定等を
+行い"Configured"状態になります。
+\item "Configured"状態では"Start"コマンドにより "Running"状態へ遷移します。
+\item "Running"状態では "Pause"コマンドにより "Paused"状態へ遷移します。
+\item "Paused"状態では "Resume"コマンドで"Running"状態へ遷移します。
 \end{itemize}
 
 \begin{figure}[htbp]
@@ -200,7 +200,7 @@ DAQ����ݡ��ͥ�ȤǤϡ����Υ����ӥ��ݡ��Ȥ����Ѥ���DAQ���ڥ졼����DAQ����ݡ��ͥ
   \begin{center}
    \includegraphics[width=58mm]{rtc-state.eps}
   \end{center}
-  \caption{RT����ݡ��ͥ�ȤΥ��ơ��ȥ��㡼��}
+  \caption{RTコンポーネントのステートチャート}
   \label{rtc-state.fig}
  \end{minipage}
 \hfill
@@ -208,7 +208,7 @@ DAQ����ݡ��ͥ�ȤǤϡ����Υ����ӥ��ݡ��Ȥ����Ѥ���DAQ���ڥ졼����DAQ����ݡ��ͥ
   \begin{center}
    \includegraphics[width=58mm]{daq-state.eps}
   \end{center}
-  \caption{DAQ����ݡ��ͥ�ȤΥ��ơ��ȥ��㡼��}
+  \caption{DAQコンポーネントのステートチャート}
   \label{daq-state.fig}
  \end{minipage}
 \end{figure}
@@ -217,44 +217,44 @@ DAQ����ݡ��ͥ�ȤǤϡ����Υ����ӥ��ݡ��Ȥ����Ѥ���DAQ���ڥ졼����DAQ����ݡ��ͥ
   \begin{center}
    \includegraphics[width=100mm]{daq-state-only.eps}
    \vspace{-5mm}
-   \caption{DAQ����ݡ��ͥ�ȤΥ��ޥ�ɤȾ������ܥ�ǥ�}
+   \caption{DAQコンポーネントのコマンドと状態遷移モデル}
   \label{command-state.fig}
   \end{center}
  \end{figure}
 
-\subsection{��󥳥�ȥ����롦��ǥ�}\label{runctrl}
-���ߤ�DAQ�ߥɥ륦�����Υ�󥳥�ȥ����롦��ǥ�ϡ�1���ؤΥĥ꡼��¤�Ǥ���1�Ĥ�DAQ
-���ڥ졼���ʥ���ȥ�����ˤǡ����٤Ƥ�DAQ����ݡ��ͥ�Ȥ����椷�ޤ������塢����絬�Ϥ�
-�����ƥ���б��Ǥ���褦�ˡ����֥���ȥ������Ƴ������¿�ų��ز����뤳�Ȥ⸡Ƥ����
-���ޤ���
-���ҤΥ���ե����졼����󡦥ե�����Ǥϡ���DAQ����ݡ��ͥ�Ȥε�ư�ν��֤����Ҥ��ޤ���
-���ߤ�DAQ����ݡ��ͥ�ȵ�ư�ν���ϡ�������ή���ǡ������ȥ꡼���
-�Ф��Ʋ�ή���鵯ư�򳫻Ϥ�����ߤϾ�ή����Ԥ��褦�˼�������Ƥ��ޤ���
+\subsection{ランコントロール・モデル}\label{runctrl}
+現在のDAQミドルウェアのランコントロール・モデルは、1階層のツリー構造です。1つのDAQ
+オペレータ（コントローラ）で、すべてのDAQコンポーネントを制御します。今後、より大規模な
+システムに対応できるように、サブコントローラを導入し、多重階層化することも検討して
+います。
+前述のコンフィグレーション・ファイルでは、各DAQコンポーネントの起動の順番が記述します。
+現在のDAQコンポーネント起動の順序は、それらを流れるデータストリームに
+対して下流から起動を開始し、停止は上流から行うように実装されています。
 
-\subsection{�ǡ���ž����ǽ}\label{data-tarans}
-DAQ����ݡ��ͥ�ȴ֤Υǡ���ž���ϡ�RT����ݡ��ͥ�Ȥ�InPort, OutPort����Ѥ��ޤ���
-InPort, OutPort�ϡ���ݲ����줿RT����ݡ��ͥ�Ȥ��̿����󥿡��ե������ǡ��ǡ�����
-���������뤿��˺��줿��ΤǤ���DAQ����ݡ��ͥ�ȴ֤ϡ�Ʊ��ۥ�����Ǥ�ͥåȥ��
-ʬ���Ķ����Ǥ�Ʃ��Ū�˥ǡ���ž����Ԥ����Ȥ��Ǥ��ޤ���
-��³����ݤ˥ǡ����ݡ��ȴ֤��̿����ʤ�����Ǥ��ޤ���
-%%CORBA��socket�ˤ��TCP �̿��������ǽ�ǡ�
-\daqmwcurrent �Ǥ� CORBA �Τߤ������ǽ�Ǥ������Υ�꡼���Ǥϡ�
-CORBA ����� socket �ˤ��TCP �̿���2�Ĥ������ǽ�ˤʤ�ͽ��Ǥ���socket ��Ȥäƥǡ���
-ž����Ԥʤ����Ȥ�CORBA����٤ƥ����Хإåɤ����ꡢ�ǡ���ž����ǽ�θ��夬���ԤǤ��ޤ���
+\subsection{データ転送機能}\label{data-tarans}
+DAQコンポーネント間のデータ転送は、RTコンポーネントのInPort, OutPortを使用します。
+InPort, OutPortは、抽象化されたRTコンポーネントの通信インターフェイスで、データを
+送受信するために作られたものです。DAQコンポーネント間は、同一ホスト中でもネットワーク
+分散環境下でも透過的にデータ転送を行うことができます。
+接続する際にデータポート間の通信手段を選択できます。
+%%CORBAとsocketによるTCP 通信が選択可能で、
+\daqmwcurrent では CORBA のみが選択可能です。次のリリースでは、
+CORBA および socket によるTCP 通信の2つが選択可能になる予定です。socket を使ってデータ
+転送を行なうことでCORBAに比べてオーバヘッドが減り、データ転送性能の向上が期待できます。
 
-DAQ����ݡ��ͥ�ȴ֤�ή���ǡ����ˤ�8�Х��ȤΥإå��ȥեå����Ĥ��Ƥ��ꡢ�ǡ�������������
-���ڤ˻��Ѥ��ޤ���
+DAQコンポーネント間を流れるデータには8バイトのヘッダとフッタがついており、データの妥当性の
+検証に使用します。
 
-�إå��ˤ�4�Х��ȤΥޥ��å��ֹ��0xe7e7�ˤȥǡ����ΥХ��ȥ�������4�Х��Ȥǳ�Ǽ���ޤ����ºݤ˼��������ǡ�����
-�Х��ȥ������ȥإå��˳�Ǽ����Ƥ���Х��ȥ���������Ӥ��뤳�Ȥǥǡ������������򸡾ڤǤ��ޤ����إå��ˤ�
-ͽ���Ȥ��ƻĤ�2�Х��Ȥ���ޤ���������ϥ桼�������Ѥ��뤳�Ȥ��Ǥ��ޤ���
-�եå����ˤ�4�Х��ȤΥޥ��å��ֹ��0xcccc�ˤȥ��������ֹ�ȸƤФ��4�Х��Ȥο��ͤ�����ޤ������������ֹ�
-�ϡ�����ݡ��ͥ�Ȥ�ž�������˱��������ä����ͤǤ������ο��ͤˤ��ǡ����˷�»���ʤ��ä������ڤǤ��ޤ���
-�����˥إå��ȥեå��Υե����ޥåȤ򼨤��ޤ���
+ヘッダには4バイトのマジック番号（0xe7e7）とデータのバイトサイズを4バイトで格納します。実際に取得したデータの
+バイトサイズとヘッダに格納されているバイトサイズを比較することでデータの妥当性を検証できます。ヘッダには
+予備として残り2バイトありますが、これはユーザが使用することができます。
+フッターには4バイトのマジック番号（0xcccc）とシーケンス番号と呼ばれる4バイトの数値があります。シーケンス番号
+は、コンポーネントの転送処理に応じて増加する値です。この数値によりデータに欠損がなかったか検証できます。
+下記にヘッダとフッタのフォーマットを示します。
 
 \begin{table}[h]
 \begin{center}
-\caption{�إå��ǡ���}
+\caption{ヘッダデータ}
 \label{tbl:header}
 \begin{tabular}{ l r l r l r l r l r l r l r l r}
 \hline
@@ -269,7 +269,7 @@ DAQ����ݡ��ͥ�ȴ֤�ή���ǡ����ˤ�8�Х��ȤΥإå��ȥեå����Ĥ��Ƥ��ꡢ�ǡ���
 
 %%\begin{table}[h]
 \begin{center}
-\caption{�եå��ǡ���}
+\caption{フッタデータ}
 \label{tbl:footer}
 \begin{tabular}{ l r l r l r l r l r l r l r l r}
 \hline
@@ -282,300 +282,300 @@ DAQ����ݡ��ͥ�ȴ֤�ή���ǡ����ˤ�8�Х��ȤΥإå��ȥեå����Ĥ��Ƥ��ꡢ�ǡ���
 \end{center}
 \end{table}
 
-\subsection{���ޥ�ɡ����ơ������̿�}\label{status}
-DAQ����ݡ��ͥ�ȤȤ��Υ���ȥ�����Ǥ���DAQ���ڥ졼�����̿��ϥ����ӥ��ݡ��Ȥ���Ѥ���
-���ޤ������ҤΤ褦�˥����ӥ��ݡ��Ȥ�InPort��OutPort�Ȥϰۤʤꡢ�桼����Ǥ�դΥ�����
-�����󥿡��ե�����������Ǥ���ݡ��ȤǤ���
-�����ӥ��ݡ��Ȥϡ֥����ӥ��ץ��Х����ס��֥����ӥ����󥷥塼�ޡץ�ǥ�ˤ��CORBA��
-��������Ƥ��ޤ���
-DAQ����ݡ��ͥ�Ȥϡ֥����ӥ��ץ��Х����פǡ�DAQ���ڥ졼���ϡ֥����ӥ����󥷥塼�ޡפ�
-�б����ޤ���DAQ����ݡ��ͥ�ȤΥ���ȥ�����Ǥ���DAQ���ڥ졼��������׵�ʥ��ޥ�ɡ�
-�ˤ��DAQ����ݡ��ͥ�Ȥϡ����ξ��֤����ܤ����ޤ���
-�����ӥ��Υ��󥿡��ե�������������뤿���IDL(Interface Definition Language)��
-���Ѥ��ޤ���
-DAQ�ߥɥ륦�����Ǥϡ�DAQService.idl �Ȥ����ե�����˥��󥿡��ե����������������ޤ���
+\subsection{コマンド・ステータス通信}\label{status}
+DAQコンポーネントとそのコントローラであるDAQオペレータの通信はサービスポートを使用して
+います。前述のようにサービスポートはInPortやOutPortとは異なり、ユーザが任意のサービ
+スインターフェースを定義できるポートです。
+サービスポートは「サービスプロバイダ」、「サービスコンシューマ」モデルによりCORBAで
+実装されています。
+DAQコンポーネントは「サービスプロバイダ」で、DAQオペレータは「サービスコンシューマ」に
+対応します。DAQコンポーネントのコントローラであるDAQオペレータからの要求（コマンド）
+によりDAQコンポーネントは、その状態を遷移させます。
+サービスのインターフェイスを定義するためにIDL(Interface Definition Language)を
+使用します。
+DAQミドルウェアでは、DAQService.idl というファイルにインターフェイスの定義があります。
 
-\subsection{�����ƥࡦ����ե����졼�����}\label{config}
-DAQ�ߥɥ륦�����Ǥϡ�ʣ����DAQ����ݡ��ͥ�Ȥ�ͳ����³���ƥǡ������������ƥ����
-�Ǥ��ޤ���������DAQ����ݡ��ͥ�Ȥϥ�������׻������뤤�ϥ�⡼�ȷ׻������ư����
-���Ƥ�Ʊ�ͤǤ���
-���Τ褦�˻��Ѥ���DAQ����ݡ��ͥ�Ȥι�������������³�λ�������뤳�Ȥ�
-����ե����졼�����ȸƤ�Ǥ��ޤ���
-���ξ���ϥ���ե����졼����󡦥ե������config.xml�ˤȤ���XMLʸ��ˤ�국�Ҥ��ޤ���
-XML�ϸ��ߡ�������ڤ��Ƥ��뵻�Ѥǡ���¤�����줿ʸ���ǡ�����ۤʤ���󥷥��ƥ�֤�
-��ͭ�Ǥ��ޤ���
-����ե�����졼����󡦥ե���������Ƥ��ѹ����뤳�Ȥǡ����Ѥ���DAQ����ݡ��ͥ��
-�����򤷥���ݡ��ͥ�ȴ֤���³���ѹ����ƽ����DAQ�����ƥ���ѹ�����ǽ�Ǥ���
-���Τ褦�˥���ե����졼�����ե������DAQ�����ƥ�򵭽Ҥ��빭���Υǡ����١�����
-���Ƥΰ�̣������ޤ���
-XMLʸ���ʸ��¤�򥹥����޸���ˤ��������뤳�Ȥ��Ǥ���XMLʸ��ι�¤���������θ��ڤ˻��Ѥ��ޤ���
-����ե����졼����󡦥ե�����Υ�������(config.xsd)��W3C��XML Schema �ǵ��Ҥ���Ƥ��ޤ���
-����ե����졼����󡦥ե�����ˤ�DAQ����ݡ��ͥ�Ȥ�ư����׻�����IP���ɥ쥹��
-DAQ����ݡ��ͥ�Ȥ�̾�������Ѥ���ǡ��������ϥݡ��Ȥμ����̾������ư�������򵭽Ҥ��ޤ���
-DAQ���ڥ졼���ϡ�����ե����졼����󡦥ե�������ᤷ��ɬ�פ�DAQ����ݡ��ͥ�Ȥ�
-�ͥåȥ���夫��õ���ơ����ޥ�ɡ����ơ������̿��Τ��Ἣ�ȤΥ����ӥ��ݡ��Ȥ�DAQ����ݡ�
-�ͥ�ȤΥ����ӥ��ݡ��Ȥ���³���ޤ����ޤ���config.xml �ε��Ҥˤ�������DAQ����ݡ��ͥ�ȴ�
-�Υǡ������ϥݡ��Ȥ��б�����ǡ������ϥݡ��Ȥ���³���ƥǡ������ȥ꡼��η�ϩ���Ω���ޤ���
+\subsection{システム・コンフィグレーション}\label{config}
+DAQミドルウェアでは、複数のDAQコンポーネントを自由に接続してデータ収集システムを構築
+できます。それらのDAQコンポーネントはローカル計算機あるいはリモート計算機上で動いて
+いても同様です。
+このように使用するDAQコンポーネントの構成、それらの接続の仕方を決めることを
+コンフィグレーションと呼んでいます。
+その情報はコンフィグレーション・ファイル（config.xml）というXML文書により記述します。
+XMLは現在、広く普及している技術で、構造化された文書やデータを異なる情報システム間で
+共有できます。
+コンフィギュレーション・ファイルの内容を変更することで、使用するDAQコンポーネント
+を選択しコンポーネント間の接続を変更して柔軟にDAQシステムの変更が可能です。
+このようにコンフィグレーションファイルはDAQシステムを記述する広義のデータベースと
+しての意味を持ちます。
+XML文書の文書構造をスキーマ言語により定義することができ、XML文書の構造の妥当性の検証に使用します。
+コンフィグレーション・ファイルのスキーマ(config.xsd)はW3CのXML Schema で記述されています。
+コンフィグレーション・ファイルにはDAQコンポーネントを起動する計算機のIPアドレス、
+DAQコンポーネントの名前、使用するデータ入出力ポートの種類と名前、起動順番等を記述します。
+DAQオペレータは、コンフィグレーション・ファイルを解釈して必要なDAQコンポーネントを
+ネットワーク上から探して、コマンド・ステータス通信のため自身のサービスポートとDAQコンポー
+ネントのサービスポートを接続します。また、config.xml の記述にしたがいDAQコンポーネント間
+のデータ入力ポートと対応するデータ出力ポートを接続してデータストリームの経路を確立します。
 
-�ܺ٤�\ref{operator-config}���������ޤ���
+詳細は\ref{operator-config}で説明します。
 
 
-\subsection{�����ƥࡦ���󥿡��ե�����}\label{sysint}
-�����ƥࡦ���󥿡��ե������Ȥϡ�DAQ�ߥɥ륦�����ȳ��������ƥ����³����ݤ��Ѥ���
-���󥿡��ե������Ǥ���
-�����ƥࡦ���󥿡��ե������ϡ�������Ū���̿��ץ��ȥ�����Ѥ��뤳�Ȥ�˾�ޤ����Ȥ���
-��ͳ�� XML �ǡ�����HTTP��ž��������������Ѥ��Ƥ��ޤ���
-���Υץ��ȥ���ˤ���̿��Ǥ���С��ɤΤ褦�ʸ��졢���ץꥱ�������Ǥ��äƤ�
-�����ƥ।�󥿡��ե�������𤷤ƥ������椬��ǽ�Ǥ���
-�㤨�� Web�֥饦������DAQ���ڥ졼���إ��ޥ�ɤ��������ƥ�󥳥�ȥ�����򤹤뤳�Ȥ��ǽ�Ǥ���
-J-PARC MLF�����Ҽ¸��ˤ����ƤϾ�̤Υ����ƥ�Ǥ���֥��եȥ��������ե졼�����פ�
-���Υץ��ȥ�����Ѥ���DAQ�ߥɥ륦�����ˤ��ǡ������������ƥࡦ���֥����ƥ��
-�̿���ԤäƤ��ޤ���
+\subsection{システム・インターフェイス}\label{sysint}
+システム・インターフェイスとは、DAQミドルウェアと外部システムを接続する際に用いる
+インターフェイスです。
+システム・インターフェイスは、より一般的な通信プロトコルを用いることが望ましいという
+理由で XML データをHTTPで転送する方式を採用しています。
+このプロトコルによる通信であれば、どのような言語、アプリケーションであっても
+システムインターフェイスを介してランの制御が可能です。
+例えば WebブラウザからDAQオペレータへコマンドを送信してランコントロールをすることも可能です。
+J-PARC MLF中性子実験においては上位のシステムである「ソフトウェア・フレームワーク」と
+このプロトコルを用いてDAQミドルウェアによるデータ収集システム・サブシステムと
+通信を行っています。
 \begin{figure}[htbp]
   \begin{center}
    \includegraphics[width=100mm]{web-interface.eps}
   \end{center}
   %\vspace{-2mm}
-  \caption{�����ƥࡦ���󥿡��ե������γ�ǰ��}
+  \caption{システム・インターフェイスの概念図}
   \label{web-interface.fig}
 \end{figure}
 
-%%���ζ���Ū�����Ƥϻ���ʸ�� \cite{Web-GUI}�δ����Ρֻ��ͻ����פ�������������
-�����ƥࡦ���󥿡��ե�������ǽ�γ�ǰ�ޤ�� \ref{web-interface.fig}�˼����ޤ���
-DAQ���ڥ졼����"Web�⡼��"�Ǥ�����HTTP������(Apache)���̿����뤿���
-"Parameter Server"����ư���ޤ���
-���Υ����Ф�\verb|mod_python|�ˤ��������줿
-"Parameter Client"������׵���Ԥ������Ƥ��ޤ���\verb|mod_python|�ϡ�Apache ��
-Python ��¹Ԥ��뤿��Υ⥸�塼��Ǥ���
-��Ͽ\ref{xmlhttp}�˳��������ƥ�Ȥ��̿��ǻ��Ѥ���ץ��ȥ���ξܺ٤򼨤��ޤ���
+%%その具体的な内容は参考文献 \cite{Web-GUI}の巻末の「参考資料」をご覧ください。
+システム・インターフェイス機能の概念図を図 \ref{web-interface.fig}に示します。
+DAQオペレータの"Webモード"では汎用HTTPサーバ(Apache)と通信するための
+"Parameter Server"が起動します。
+このサーバは\verb|mod_python|により実装された
+"Parameter Client"からの要求を待ち受けています。\verb|mod_python|は、Apache で
+Python を実行するためのモジュールです。
+付録\ref{xmlhttp}に外部システムとの通信で使用するプロトコルの詳細を示します。
 
-\subsection{���֤���Ӳ��ϥѥ�᡼�����굡ǽ}\label{cond}
-���ҤΥ���ե����졼����󡦥ե�����Ȥ��̤����֥ѥ�᡼���䥪��饤����ϥѥ�᡼������
-�ι����Υǡ����١����Ȥ���XML�ǽ񤫤줿����ǥ�����󡦥ե����뤬����ޤ���
-����ե����졼����󡦥ե�����ˤϼ¸��Υ����ˤ��Ѳ����ʤ�DAQ�����ƥ�ι������ξ����
-���Ҥ�������ǥ�����󡦥ե�����ˤϥ������Ѳ������롢�¸����֤Υѥ�᡼���䥪��饤��
-�����ѤΥѥ�᡼�����򵭽Ҥ��ޤ�������ǥ�����󡦥ե�����ξܺ٤�\ref{comp-cond}������
-���ޤ���
-����ե����졼����󡦥ե������DAQ���ڥ졼�����ɤ߹���Ǿ����������ޤ���������ǥ������
-�ե�����ϳƥ���ݡ��ͥ�Ȥ��Ƽ�������ɤ߹����ɬ�פʾ����������ޤ���
-���ߤϡ��ƥ���ݡ��ͥ�ȤǤ� XML��ʸ���Ͻ�������٤�ڸ����뤿�ᡢXML ����٤ƽ��������̤� 
-JSON(JavaScript Object Notation)�������Ѵ������ե������ƥ���ݡ��ͥ�Ȥ��ɤ߹���ǽ�����
-�Ԥ�������ȤäƤ��ޤ���
-��\ref{condition.fig}�˥���ե����졼����󡦥ե�����ȥ���ǥ�����󡦥ե�����ˤĤ���
-�����줾������򼨤��ޤ���
+\subsection{装置および解析パラメータ設定機能}\label{cond}
+前述のコンフィグレーション・ファイルとは別に装置パラメータやオンライン解析パラメータ情報
+の広義のデータベースとしてXMLで書かれたコンディション・ファイルがあります。
+コンフィグレーション・ファイルには実験のラン毎には変化しないDAQシステムの構成等の情報を
+記述し、コンディション・ファイルにはラン毎に変化しうる、実験装置のパラメータやオンライン
+解析用のパラメータ等を記述します。コンディション・ファイルの詳細は\ref{comp-cond}で説明
+します。
+コンフィグレーション・ファイルはDAQオペレータが読み込んで情報を取得しますが、コンディション・
+ファイルは各コンポーネントが各自それを読み込んで必要な情報を取得します。
+現在は、各コンポーネントでの XML構文解析処理の負荷を軽減するため、XML に比べて処理が軽量な 
+JSON(JavaScript Object Notation)形式に変換したファイルを各コンポーネントが読み込んで処理を
+行う方式をとっています。
+図\ref{condition.fig}にコンフィグレーション・ファイルとコンディション・ファイルについて
+、それぞれの役割を示します。
 \begin{figure}[htbp]
 %%\begin{wrapfigure}{r}{65mm}
  \begin{center}
   \includegraphics[width=90mm]{condition.eps}
-  \caption{����ե����졼����󡦥ե�����ȥ���ǥ�����󡦥ե�����}
+  \caption{コンフィグレーション・ファイルとコンディション・ファイル}
   \label{condition.fig}
  \end{center}
 \end{figure}
 %%\end{wrapfigure}
 
-\subsection{��⡼�ȥ֡��ȵ�ǽ}\label{remoteboot}
-DAQ�ߥɥ륦�����Υ�⡼�ȥ֡��ȵ�ǽ�Ȥϡ��ͥåȥ����η׻���(CPU DAQ)�ˤ���DAQ����ݡ��ͥ�Ȥ�
-��������׻���(CPU UI)����Υ��ޥ�ɤˤ�굯ư�����뵡ǽ�Ǥ���
-����Ū�ˤϡ�Linux xinetd �Υ����ӥ��ΤҤȤĤȤ��ƥݡ���50000�֤��Ф���ư���Ԥ��ޤ���
-J-PARC MLF�����Ҥˤ������⡼�ȥ֡��Ȥ���������\ref{remote-booting.fig}�˼����ޤ���
-DAQ�����ƥ൯ư������ץ� run.py ��ư���ޤ���
-�ƥ���ݡ��ͥ�Ȥε�ư�ᥫ�˥�����\ref{remote-booting.fig}���Ȥ˲��⤷�ޤ���
+\subsection{リモートブート機能}\label{remoteboot}
+DAQミドルウェアのリモートブート機能とは、ネットワーク上の計算機(CPU DAQ)にあるDAQコンポーネントを
+ローカル計算機(CPU UI)からのコマンドにより起動させる機能です。
+具体的には、Linux xinetd のサービスのひとつとしてポート50000番に対して動作を行います。
+J-PARC MLF中性子におけるリモートブートの利用例を図\ref{remote-booting.fig}に示します。
+DAQシステム起動スクリプト run.py を起動します。
+各コンポーネントの起動メカニズムを図\ref{remote-booting.fig}をもとに解説します。
 \begin{enumerate}
-\item �桼��������������׻����Υ��ޥ�ɥץ���ץȤ���\url|run.py|��ư���ޤ���
-  \url|run.py|�Ϥޤ����ƥ���ݡ��ͥ�Ȥ��͡��ॵ���С����̿�����Τ�
-  ɬ�פȤʤ���󤬽񤫤줿�ե�����\url|rtc.conf|����������ƥ�⡼��
-  �׻����˥ͥåȥ�����̤���\url|rtc.conf|������ޤ�����⡼�ȷ׻���¦�Ǥ�
-  ���Υե������������뤿���xinetd���鵯ư�������������С�
-  \url|bootComps.py|��Ȥ��ޤ������������ե������\url|/tmp/rtc.conf|
-  ����¸����ޤ����ʤ�\url|rtc.conf|�����Ƥϳƥ�⡼�ȷ׻�����
-  �����˥ޥå����Ƥ���ɬ�פ�����ޤ���
-\item \url|run.py|��³���ƥ���ݡ��ͥ�ȵ�ư�ѥ�����ץ�\url|run-comps.sh|
-  �ե������ƥ�⡼�ȷ׻���������ޤ�����⡼�ȷ׻���¦�Ǥ�\url|rtc.conf|�ե�����
-  ��Ʊ�ͤ�xinetd���鵯ư���줿���������С�\url|bootComps.py|��Ȥä�
-  \url|run-comps.sh|��������ޤ������������ե������\url|/tmp/run-comps.sh|
-  �Ȥ�����¸����ޤ���
-\item xinetd���鵯ư���줿\url|bootComps.py|�ϡ�\url|run-comps.sh|�������
-  \url|/tmp/run-comps.sh|��\url|system()|�ؿ��Ǽ¹Ԥ��ޤ�������ǳƥ���ݡ��ͥ��
-  ����ư���ޤ���
-\item ��ư��������ݡ��ͥ�Ȥ�\url|/tmp/rtc.conf|�򻲾Ȥ��������˽񤫤줿
-  ������Ȥ�Naming service�ؼ��Ȥ���Ͽ���ޤ���
+\item ユーザーがローカル計算機のコマンドプロンプトから\url|run.py|を起動します。
+  \url|run.py|はまず、各コンポーネントがネームサーバーと通信するのに
+  必要となる情報が書かれたファイル\url|rtc.conf|を作成し、各リモート
+  計算機にネットワークを通じて\url|rtc.conf|を送ります。リモート計算機側では
+  このファイルを受信するためにxinetdから起動される受信サーバー
+  \url|bootComps.py|を使います。受信したファイルは\url|/tmp/rtc.conf|
+  に保存されます。なお\url|rtc.conf|の内容は各リモート計算機の
+  構成にマッチしている必要があります。
+\item \url|run.py|は続いてコンポーネント起動用スクリプト\url|run-comps.sh|
+  ファイルを各リモート計算機に送ります。リモート計算機側では\url|rtc.conf|ファイル
+  と同様にxinetdから起動された受信サーバー\url|bootComps.py|を使って
+  \url|run-comps.sh|を受信します。受信したファイルは\url|/tmp/run-comps.sh|
+  として保存されます。
+\item xinetdから起動された\url|bootComps.py|は、\url|run-comps.sh|を受信後
+  \url|/tmp/run-comps.sh|を\url|system()|関数で実行します。これで各コンポーネント
+  が起動します。
+\item 起動したコンポーネントは\url|/tmp/rtc.conf|を参照し、そこに書かれた
+  情報をもとにNaming serviceへ自身を登録します。
 \item 
-  ���ƤΥ�⡼�ȷ׻����إ���ݡ��ͥ�Ȥε�ư��ꥯ�����Ȥ����塢
-  \url|run.py|����DaqOperator����ư����ޤ���
-\item ��ư����DaqOperator�ϥ�������ˤ���\url|config.xml|��ѡ�������ɬ��
-  �ʥ���ݡ��ͥ�Ȥ�Naming service���䤤��碌������ݡ��ͥ�Ȥ�
-  ���������ƥ���ݡ��ͥ�ȴ֤���³���ޤ���Naming service ���䤤��碌��
-  ��Ū�Υ���ݡ��ͥ�Ȥ����Ĥ���ʤ����ϡ�0.5�å��꡼�פ���20��Υ�ȥ饤
-  ��Ԥʤ��ޤ���20��Υ�ȥ饤�ǥ���ݡ��ͥ�Ȥ����Ĥ���ʤ����ϡ����顼
-  �Ȥʤꡢ����ݡ��ͥ�Ȥε�ư�˼��Ԥ��ޤ������٤ƤΥ���ݡ��ͥ�Ȥ����Ĥ��ä����ϡ�
-  �ƥ���ݡ��ͥ�ȴ֤Υǡ����ݡ��Ȥ���³����ǡ���������ǥ����֤ˤʤ�ޤ���
+  全てのリモート計算機へコンポーネントの起動をリクエストした後、
+  \url|run.py|からDaqOperatorが起動されます。
+\item 起動したDaqOperatorはローカルにある\url|config.xml|をパーズし、必要
+  なコンポーネントをNaming serviceへ問い合わせ、コンポーネントを
+  検索し、各コンポーネント間を接続します。Naming service に問い合わせて
+  目的のコンポーネントが見つからない場合は、0.5秒スリープして20回のリトライ
+  を行ないます。20回のリトライでコンポーネントが見つからない場合は、エラー
+  となり、コンポーネントの起動に失敗します。すべてのコンポーネントが見つかった場合は、
+  各コンポーネント間のデータポートが接続されデータ収集レディ状態になります。
 \end{enumerate}
 
 \begin{figure}[t]
   \centering
   \includegraphics[scale=0.7]{boot.eps}
-  \caption{DAQ����ݡ��ͥ�ȤΥ�⡼�ȵ�ư�ᥫ�˥��ࡣ}
+  \caption{DAQコンポーネントのリモート起動メカニズム。}
   \label{remote-booting.fig}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{DAQ����ݡ��ͥ�Ȥλ���}\label{daqcomp}
+\section{DAQコンポーネントの仕様}\label{daqcomp}
 
-\subsection{DaqComponentBase���饹}
-\verb|DaqComponentBase|���饹�ϡ���DAQ����ݡ��ͥ�ȶ��̤ε�ǽ�μ����Τ����Ƴ������ޤ�����
-DAQ�ߥɥ륦�����Ǥϥ桼�����ȼ���DAQ����ݡ��ͥ�Ȥ�ȯ���Ƥ�������³����
-DAQ�����ƥ���ۤ��ޤ���
-������DAQ����ݡ��ͥ�Ȥ�ȯ����ݤϡ�����\verb|DaqComponentBase|���饹��Ѿ�����
-�����ʥ��饹����ޤ������ηѾ��ˤ��DAQ����ݡ��ͥ�ȤȤ���ɬ�פȤ���뵡ǽ�ϡ�
-��������뤳�Ȥˤʤ�ޤ����������Ѿ����������Ǥϡ����⤷�ʤ��ʥ����å������Ρ�
-DAQ����ݡ��ͥ�Ȥ��Ǥ���Τǡ���ȯ�Ԥϡ��ƾ��֤Ǥ�ư��μ�����Ԥ����Ȥ�
-ɬ�פʵ�ǽ��¸����뤳�Ȥ��Ǥ��ޤ����ܺ٤�\ref{trans}���������ޤ���
-DAQ����ݡ��ͥ�Ȥ�ȯ����桼���ϡ��ƾ��֤���Ӿ������ܤμ����Τ߹Ԥʤ��Ф褤�Τǡ���ȯ��Ψ��
-�����������ɤΥ��ƥʥ󥹥ӥ�ƥ��θ��夬�ޤ��ޤ���
+\subsection{DaqComponentBaseクラス}
+\verb|DaqComponentBase|クラスは、各DAQコンポーネント共通の機能の実装のために導入されました。
+DAQミドルウェアではユーザが独自のDAQコンポーネントを開発してそれらを接続し、
+DAQシステムを構築します。
+新たなDAQコンポーネントを開発する際は、この\verb|DaqComponentBase|クラスを継承して
+新たなクラスを作ります。この継承によりDAQコンポーネントとして必要とされる機能は、
+実装されることになります。しかし継承しただけでは、何もしない（ロジックが空の）
+DAQコンポーネントができるので、開発者は、各状態での動作の実装を行うことで
+必要な機能を実現することができます。詳細は\ref{trans}で説明します。
+DAQコンポーネントを開発するユーザは、各状態および状態遷移の実装のみ行なえばよいので、開発効率、
+ソースコードのメンテナンスビリティの向上が図られます。
 
-\verb|DaqComponentBase|���饹�ϡ���\ref{class-diag.fig}�Τ褦�ʷѾ��ط�����äƤ��ޤ���
-�ǡ����ե�������RT����ݡ��ͥ�Ȥϡ�\verb|RTC::DataFlowComponentBase| ��Ѿ����Ƽ������ޤ���
-DAQ����ݡ��ͥ�Ȥϥǡ����ե�����RT����ݡ��ͥ�Ȥ����ĥ���ƺ���Ƥ���Τǡ�
-��\ref{class-diag.fig}�Τ褦�ʷѾ��ط�������ޤ���
-DAQ����ݡ��ͥ�Ȥ�ȯ����ݤϡ�\verb|DAQMW::DaqComponentBase| ��Ѿ����Ƽ������ޤ���
+\verb|DaqComponentBase|クラスは、図\ref{class-diag.fig}のような継承関係を持っています。
+データフロー型のRTコンポーネントは、\verb|RTC::DataFlowComponentBase| を継承して実装します。
+DAQコンポーネントはデータフロー型RTコンポーネントから拡張して作られているので、
+図\ref{class-diag.fig}のような継承関係があります。
+DAQコンポーネントを開発する際は、\verb|DAQMW::DaqComponentBase| を継承して実装します。
 \begin{figure}[htbp]
 %%\begin{wrapfigure}{r}{65mm}
  \begin{center}
   \includegraphics[width=60mm]{class-diag.eps}
-  \caption{DAQ����ݡ��ͥ�ȤΥ��饹��}
+  \caption{DAQコンポーネントのクラス図}
   \label{class-diag.fig}
  \end{center}
 \end{figure}
 %%\end{wrapfigure}
 
-\verb|DaqComponentBase|���饹�Ǽ¸����Ƥ��뵡ǽ�ϼ��Τ�ΤǤ���
+\verb|DaqComponentBase|クラスで実現している機能は次のものです。
 \begin{itemize}
-\item DAQ�Τ���ξ������ܵ�ǽ
-\item ���ޥ�ɼ���/���ơ�����������ǽ
-\item Fatal���顼�κݤΥ��ơ�����������ǽ
-%%\item ���٥�ȿ����Υ����ѿ�
+\item DAQのための状態遷移機能
+\item コマンド受信/ステータス送信機能
+\item Fatalエラーの際のステータス送信機能
+%%\item イベント数等のメンバ変数
 \end{itemize}
 
-\verb|DaqComponentBase|���饹��Ѿ����ƻ��ѤǤ�����дؿ��ˤĤ����������ޤ���
-���ΰ�������Ͽ\ref{funclist}�˼����ޤ���
+\verb|DaqComponentBase|クラスを継承して使用できるメンバ関数について説明します。
+その一覧を付録\ref{funclist}に示します。
 
 %%\begin{itemize}
 
-\subsubsection{����ݡ��ͥ�Ƚ����}\label{init}
-����ݡ��ͥ�ȤΥ��󥹥ȥ饯���ǻ��Ѥ���ؿ��Ȥ��ơ����ޥ�ɥݡ��Ȥν������Ԥʤ�\verb|init_command_port()|
-, �������ܥơ��֥�ν������Ԥʤ�\verb|init_state_table()|, ����ݡ��ͥ�Ȥ�̾�������ꤹ��\verb|set_comp_name()|������ޤ���
+\subsubsection{コンポーネント初期化}\label{init}
+コンポーネントのコンストラクタで使用する関数として、コマンドポートの初期化を行なう\verb|init_command_port()|
+, 状態遷移テーブルの初期化を行なう\verb|init_state_table()|, コンポーネントの名前を設定する\verb|set_comp_name()|があります。
 \begin{Verbatim}
-  int init_command_port()                ���ޥ�ɥݡ��Ƚ����
-  void init_state_table()                �������ܥơ��֥�����
-  int set_comp_name(char* name)          ����ݡ��ͥ��̾������
+  int init_command_port()                コマンドポート初期化
+  void init_state_table()                状態遷移テーブル初期化
+  int set_comp_name(char* name)          コンポーネント名の設定
 \end{Verbatim}
 
-\subsubsection{���������ֹ�}\label{seq}
-DAQ����ݡ��ͥ�Ȥϥ��������ֹ�ȸƤФ���ͤ���äƤ��ޤ�������ϡ��ǡ����������Ϥ�Ԥʤ�����ݡ��ͥ�Ȥ�
-���Ԥ���������Ԥä��ݤ�1�Ť����䤵����ͤǤ����㤨�С����д狼��ǡ������������
-�꡼������ݡ��ͥ�Ȥϡ��ǡ�������������Υǡ����˥إå��ȥեå���Ĥ������ʤΥ���ݡ��ͥ�Ȥ���������������
-����1�����ä����ޤ�������ݡ��ͥ�Ȥν����δ�λ�ϥ���ݡ��ͥ�ȳ�ȯ�Ԥ��ΤäƤ���Τǡ���������λ������
-\verb|inc_sequence_num()|����Ѥ��ޤ����ޤ����������ֹ�Υꥻ�åȤ�������뤿��ˤϲ����δؿ���Ȥ��ޤ���
+\subsubsection{シーケンス番号}\label{seq}
+DAQコンポーネントはシーケンス番号と呼ばれる値を持っています。これは、データの入出力を行なうコンポーネントが
+期待される処理を行った際に1づつ増やされる値です。例えば、検出器からデータを取得する
+リーダコンポーネントは、データを取得しそのデータにヘッダとフッタをつけ、後段のコンポーネントに送信が成功した
+場合に1つ増加させます。コンポーネントの処理の完了はコンポーネント開発者が知っているので、処理が完了したら
+\verb|inc_sequence_num()|を使用します。またシーケンス番号のリセットや取得するためには下記の関数を使います。
 \begin{Verbatim}
-  int inc_sequence_num()                 ���������ֹ��1�����ä�����
-  int reset_sequence_num()               ���������ֹ��0�ˤ���
-  unsigned long long get_sequence_num()  ���������ֹ���������
+  int inc_sequence_num()                 シーケンス番号を1つ増加させる
+  int reset_sequence_num()               シーケンス番号を0にする
+  unsigned long long get_sequence_num()  シーケンス番号を取得する
 \end{Verbatim}
 
-\subsubsection{ž���ǡ���������}\label{datasize}
-�ǡ����������Ϥ�Ԥʤ�DAQ����ݡ��ͥ�Ȥϡ�����ޤǼ��Ȥ������ʤޤ��������ˤ����ǡ��������Х��ȿ�����äƤ��ޤ���
-�ǡ������ȥ꡼��Υ������ȥݥ���ȤȤʤ륳��ݡ��ͥ�Ȥ��饨��ɥݥ���ȤȤʤ륳��ݡ��ͥ�Ȥޤǡ�����
-�ͤ��������ʤ뤳�Ȥ���������ޤ��ʤ��δ֤˥ǡ����򥵥�ץ�󥰤�����ե��륿��󥰤��륳��ݡ��ͥ�Ȥ�¸�ߤ��ʤ����ˡ�
-ž���ǡ����������Υ��󥯥���ȡ��ꥻ�åȡ�������Ԥʤ�����ˤϲ����δؿ���Ȥ��ޤ���
+\subsubsection{転送データサイズ}\label{datasize}
+データの入出力を行なうDAQコンポーネントは、これまで自身が受信（または送信）したデータの総バイト数を持っています。
+データストリームのスタートポイントとなるコンポーネントからエンドポイントとなるコンポーネントまで、その
+値は等しくなることが要請されます（その間にデータをサンプリングしたりフィルタリングするコンポーネントが存在しない場合）。
+転送データサイズのインクリメント、リセット、取得を行なうためには下記の関数を使います。
 \begin{Verbatim}
-  int inc_total_data_size(unsigned int byteSize) ���ꤷ���Х��ȿ������ǡ����Х��ȿ��˲ä���
-  int reset_total_data_size()                    ���Х��ȿ���0�ˤ���
-  unsigned long long get_total_data_size()       ���Х��ȿ����������
+  int inc_total_data_size(unsigned int byteSize) 指定したバイト数を総データバイト数に加える
+  int reset_total_data_size()                    総バイト数を0にする
+  unsigned long long get_total_data_size()       総バイト数を取得する
 \end{Verbatim}
 
-\subsubsection{�ǡ����إå����եå���Ϣ}\label{header}
-\ref{data-tarans}�����������إå����󡢥եå�����򥻥åȤ���ؿ��Ȥ��Ƽ���2�Ĥ��Ѱդ���Ƥ��ޤ���
-�ǡ����Х��ȿ���إå��˳�Ǽ����\verb|set_header()|�����������ֹ��եå��˥��åȤ���\verb|set_footer()|�Ǥ���
-�ǡ����Х��ȿ��䥷�������ֹ�ϡ��ǡ�������������ݤ˥ǡ������������θ��ڤ˻��Ѥ��ޤ���
+\subsubsection{データヘッダ、フッタ関連}\label{header}
+\ref{data-tarans}で説明したヘッダ情報、フッタ情報をセットする関数として次の2つが用意されています。
+データバイト数をヘッダに格納する\verb|set_header()|、シーケンス番号をフッタにセットする\verb|set_footer()|です。
+データバイト数やシーケンス番号は、データを受信した際にデータの妥当性の検証に使用します。
 \begin{Verbatim}
-  int set_header(unsigned char* header, unsigned int data_byte_size) �إå��˥ǡ����Х��ȿ����Ǽ
-  int set_footer(unsigned char* footer, unsigned int sequence_num)   �եå��˥��������ֹ���Ǽ
+  int set_header(unsigned char* header, unsigned int data_byte_size) ヘッダにデータバイト数を格納
+  int set_footer(unsigned char* footer, unsigned int sequence_num)   フッタにシーケンス番号を格納
 \end{Verbatim}
 
-�إå����󡢥եå����������å����뤿��δؿ��Ȥ��Ƽ���3�Ĥ�����ޤ���\verb|check_header(), check_footer()|�Ǥ�
-�����å�������̤� bool �ͤ��֤�Τǡ��桼���Ϥ����ͤ� False ���ä����ϡ�\verb|fatal_error_report()| ��Ƥ��Fatal���顼
-����𤷡����Ȥϥ����ɥ���֤ˤʤ�ޤ���
-\verb|check_header_footer()|�Ǥϡ��إå��ޤ��ϥեå������꤬������ϡ����δؿ����\verb|fatal_error_report()| ��
-�Ƥ�Ǥ��ޤ���
+ヘッダ情報、フッタ情報をチェックするための関数として次の3つがあります。\verb|check_header(), check_footer()|では
+チェックした結果が bool 値で返るので、ユーザはその値が False だった場合は、\verb|fatal_error_report()| を呼んでFatalエラー
+を報告し、自身はアイドル状態になります。
+\verb|check_header_footer()|では、ヘッダまたはフッタに問題がある場合は、その関数中で\verb|fatal_error_report()| を
+呼んでいます。
 
 \begin{Verbatim}
-  bool check_header(unsigned char* header, unsigned received_byte)     �إå��Υ����å���Ԥʤ�
-  bool check_footer(unsigned char* footer, unsigned loop_cnt)          �եå��Υ����å���Ԥʤ�
+  bool check_header(unsigned char* header, unsigned received_byte)     ヘッダのチェックを行なう
+  bool check_footer(unsigned char* footer, unsigned loop_cnt)          フッタのチェックを行なう
   bool check_header_footer(const RTC::TimedOctetSeq& in_data, unsigned int block_byte_size) 
-  �嵭��2�Ĥ�Ԥʤ�
+  上記の2つを行なう
 \end{Verbatim}
 
-\verb|get_event_size()|��Ϳ����줿�ǡ����ΥХ��ȿ�����إå��ȥեå����������̣�Υǡ����Х��ȿ����֤��ޤ���
+\verb|get_event_size()|は与えられたデータのバイト数からヘッダとフッタを除いた正味のデータバイト数を返します。
 \begin{Verbatim}
-  unsigned int get_event_size(unsigned int block_byte_size)  ��̣�Υǡ��������������
+  unsigned int get_event_size(unsigned int block_byte_size)  正味のデータ数を取得する
 \end{Verbatim}
 
-\subsubsection{�������ܴ�Ϣ}\label{state}
-\verb|DaqComponentBase| ��Ǥϡ����ȥåץ��ޥ�ɤ���������RUNNING���֤���CONFIGURED���֤ؤ�����
-�ʾ������ܤ˴ؤ��Ƥ�\ref{trans}�������ˤ����å�����ޤ���
-�ʤ��ʤ饳��ݡ��ͥ�Ȥ�������CONFIGURED���֤����ܤ��뤿��ˤϡ����߽������ư���λ����ɬ�פ����뤫��Ǥ���
-�����δ�λ������ϥ���ݡ��ͥ�Ȥˤ�äư㤦�Τǡ����Υ��å���������Τϥ���ݡ��ͥ�ȼ��ȤǤ���
-����Ū�ˤϡ�\verb|daq_run()|������ǲ�ǽ�ʥݥ���Ȥǥ��ȥåץ��ޥ�ɤ�̵ͭ���ǧ����\verb|check_trans_lock()|��Ƥ�ǡ�
-�����֤��ͤ����ξ��ϡ�\verb|set_trans_unlock()|��Ƥӡ����ξ��֤����ܲ�ǽ�Ǥ��뤳�Ȥ��Τ餻�ޤ���
+\subsubsection{状態遷移関連}\label{state}
+\verb|DaqComponentBase| 中では、ストップコマンドを受信するとRUNNING状態からCONFIGURED状態への遷移
+（状態遷移に関しては\ref{trans}で説明）がロックされます。
+なぜならコンポーネントが安全にCONFIGURED状態に遷移するためには、現在処理中の動作を完了する必要があるからです。
+処理の完了の定義はコンポーネントによって違うので、そのロックを解除するのはコンポーネント自身です。
+具体的には、\verb|daq_run()|中の中断可能なポイントでストップコマンドの有無を確認する\verb|check_trans_lock()|を呼んで、
+その返り値が真の場合は、\verb|set_trans_unlock()|を呼び、次の状態に遷移可能であることを知らせます。
 
 \begin{Verbatim}
-  bool check_trans_lock()  ���ȥåץ��ޥ�ɤ�ȯ�Ԥ���Ƥ��뤫�����å�����
-  void set_trans_unlock()  RUNNING���֤���CONFIGURED���֤����ܤ�Ԥʤ�
+  bool check_trans_lock()  ストップコマンドが発行されているかチェックする
+  void set_trans_unlock()  RUNNING状態からCONFIGURED状態へ遷移を行なう
 \end{Verbatim}
 
-\subsubsection{��̿Ū��Fatal�˥��顼������Ϣ}\label{fatal}
-DAQ����ݡ��ͥ�Ȥϥ桼����������Ū�˱����Ƽ�ͳ�˳�ȯ�Ǥ��ޤ����������ä�
-DAQ����ݡ��ͥ�ȤǤϡ���Υ��顼���������ǽ��������ޤ���DAQ�ߥɥ륦�����Ǥ�Fatal���顼�ϡ��֥��顼����������礽�Υ���ݡ��ͥ��
-���Ȥǲ��Ǥ��ʤ���Ρפ�������Ƥ��ޤ������ξ�硢�����δؿ���Ƥ��DAQ���ڥ졼������𤷡����Ȥϥ����ɥ�
-���֤ˤʤ�ޤ���Fatal ���顼�ξ������������桼���ʿ͡ˤޤ��Ͼ�̤Υե졼�����Ǥϡ����򥹥ȥåפ��ޤ���
-Fatal���顼��ν����Ȥ��ư���Ū�ˤϡ����ȥåץ��ޥ�ɤˤ����򥹥ȥåפ��ơ����Υ��顼�θ�����������ơ��ƥ������Ȥ��뤫
-������ݡ��ͥ�Ȥ�λ���ƺƵ�ư���뤫�Τɤ��餫�Ǥ���
-%% ����ϳƥ���ݡ��ͥ�ȤΥ����å�����������Ѥ˰�¸���ޤ����㤨�С��֤��륨�顼����������
-%% 5���ȥ饤�������˽�λ�����׾�����ϡ�Fatal���顼�Ȥ��ʤ����⤢��Ǥ��礦�����֤��Υ��顼�������������ǥ�ȥ饤�Ϥ��ʤ���
-%% ���ϡ�Fatal���顼�ˤʤꤨ�ޤ�����ȯ�Ԥ�¸��Υݥꥷ���ˤ�� Fatal ���顼����������ȹͤ��Ƥ��ޤ���
-DAQ�ߥɥ륦�����Ǥϡ�Fatal ���顼�Υ����פȤ���DAQ�ߥɥ륦������������Ƥ����Τȡ��桼������������Τ�2�Ĥ�ʬ�ष�Ƥ��ޤ���
-�ܺ٤�\ref{fatal_error}���������ޤ���DAQ�ߥɥ륦����������ѤΥ��顼�� enum �Ǥ��μ������ꤷ�ޤ����桼���ˤ������Τ��
-�ϡ�enum �Ȥ��� \verb|USER_DEFINED_ERROR1,...,USER_DEFINED_ERROR20|����¾�Υ��顼�Ƚ�ʣ���ʤ��褦�˻��ꤷ�ơ����顼�ξܺ٤�
-ʸ����ǻ��ꤷ�ޤ�������ϡ���̤Υե졼�����ǥ桼������� enum ���б�����������Ԥʤ�����
-ͭ���Ǥ���
+\subsubsection{致命的（Fatal）エラー処理関連}\label{fatal}
+DAQコンポーネントはユーザがその目的に応じて自由に開発できます。したがって
+DAQコンポーネントでは、種々のエラーが起こる可能性があります。DAQミドルウェアではFatalエラーは、「エラーが起きた場合そのコンポーネント
+自身で解決できないもの」と定義しています。その場合、下記の関数を呼んでDAQオペレータに報告し、自身はアイドル
+状態になります。Fatal エラーの情報を受信したユーザ（人）または上位のフレームワークでは、ランをストップします。
+Fatalエラー後の処理として一般的には、ストップコマンドによりランをストップして、そのエラーの原因を取り除いて、再スタートするか
+全コンポーネントを終了して再起動するかのどちらかです。
+%% これは各コンポーネントのロジックや実装、運用に依存します。例えば、「あるエラーが起きたが
+%% 5回リトライ後に正常に終了した」場合等は、Fatalエラーとしない場合もあるでしょうが、「そのエラーが起きた時点でリトライはしない」
+%% 場合は、Fatalエラーになりえます。開発者や実験のポリシーにより Fatal エラーは定義されると考えています。
+DAQミドルウェアでは、Fatal エラーのタイプとしてDAQミドルウェアで定義しているものと、ユーザが定義するものの2つに分類しています。
+詳細は\ref{fatal_error}で説明します。DAQミドルウェアで定義済のエラーは enum でその種類を指定します。ユーザによる定義のもの
+は、enum として \verb|USER_DEFINED_ERROR1,...,USER_DEFINED_ERROR20|から他のエラーと重複しないように指定して、エラーの詳細を
+文字列で指定します。これは、上位のフレームワークでユーザ定義の enum に対応した処理を行なう場合に
+有効です。
 
-\subsubsection{ž�����ơ���������}\label{portstat}
-DAQ-Middleware 1.0.0�Ǥϡ������δؿ��ǥǡ����ݡ��ȤΥ��ơ�����������Ǥ��ޤ���
+\subsubsection{転送ステータス取得}\label{portstat}
+DAQ-Middleware 1.0.0では、下記の関数でデータポートのステータスを取得できます。
 \begin{Verbatim}  
   BufferStatus check_outPort_status(RTC::OutPort<RTC::TimedOctetSeq> & myOutPort) 
-  ���ꤷ�� OutPort ��ž�����ơ��������������
+  指定した OutPort の転送ステータスを取得する
 
   BufferStatus check_inPort_status(RTC::InPort<RTC::TimedOctetSeq> & myInPort)
-  ���ꤷ�� InPort ��ž�����ơ��������������    
+  指定した InPort の転送ステータスを取得する    
 \end{Verbatim}
-�֤��ͤ�BufferStatus �ϡ����Τ褦��enum �Ǥ���
+返り値のBufferStatus は、次のようなenum です。
 \begin{Verbatim}
   enum BufferStatus {BUF_FATAL = -1, BUF_SUCCESS, BUF_TIMEOUT, BUF_NODATA, BUF_NOBUF}
 \end{Verbatim}
 
-DAQ-Middleware 1.0.0�Ǥϡ������δؿ��ǥǡ����ݡ��Ȥ���³���ǧ�Ǥ��ޤ����㤨��CONFIGURED���֤���RUNNING���֤�
-���ܤ���ݤˡ�\verb|daq_start()| ��ǸƤ�ǥǡ����ݡ��Ȥ���³���ǧ���ơ�\verb|daq_run()|�ǥǡ�����ž����Ԥʤ��ޤ���
+DAQ-Middleware 1.0.0では、下記の関数でデータポートの接続を確認できます。例えばCONFIGURED状態からRUNNING状態へ
+遷移する際に、\verb|daq_start()| 中で呼んでデータポートの接続を確認して、\verb|daq_run()|でデータの転送を行ないます。
 \begin{Verbatim}  
   bool check_dataPort_connections(RTC::OutPort<RTC::TimedOctetSeq> & myOutPort)
-  OutPort����³���ǧ
+  OutPortの接続を確認
 
   bool check_dataPort_connections(RTC::InPort<RTC::TimedOctetSeq> & myInPort)
-  InPort����³���ǧ
+  InPortの接続を確認
 \end{Verbatim}
 
-\verb|DaqComponentBase| ���饹��Ѿ����ƺ��DAQ����ݡ��ͥ�Ȥϡ������ξ������ܤ˴ط����벼����
-���۴ؿ����������ɬ�פ�����ޤ����ɤΤ褦�˼������뤫��\ref{trans}���������ޤ���
+\verb|DaqComponentBase| クラスを継承して作るDAQコンポーネントは、下記の状態遷移に関係する下記の
+仮想関数を実装する必要があります。どのように実装するかは\ref{trans}で説明します。
 
 \begin{Verbatim}
   ...
@@ -592,24 +592,24 @@ DAQ-Middleware 1.0.0�Ǥϡ������δؿ��ǥǡ����ݡ��Ȥ���³���ǧ�Ǥ��ޤ����㤨��CO
 
 %%\end{itemize}
 
-%% \subsection{�������ܥ�ǥ�}
-%% DAQ�����ƥ�ξ������ܥ�ǥ�Ȥ��ơ��桹��"LOADED", "CONFIGURED", "RUNNING", "PAUSED"�Ȥ���4�Ĥξ���
-%% �ˤ���󥳥�ȥ������ԤäƤ��ޤ������֤��ɲäޤ��Ϻ���⸶��Ū�ˤϲ�ǽ�Ǥ�����\verb|DaqComponentBase|
-%% ���Τ��ѹ���ɬ�פˤʤ�ޤ���
-%% RT����ݡ��ͥ�ȤǤϡ�"Active", "Inactive","Error" ��3�Ĥξ��֤��������Ƥ��ޤ����桹�ϡ��嵭��
-%% DAQ����ݡ��ͥ�Ȥ�4�Ĥξ��֤�ޤΤ褦��RT����ݡ��ͥ�Ȥ�"Active"���֤إޥåԥ󥰤�Ԥ��ޤ�����
+%% \subsection{状態遷移モデル}
+%% DAQシステムの状態遷移モデルとして、我々は"LOADED", "CONFIGURED", "RUNNING", "PAUSED"という4つの状態
+%% によるランコントロールを行っています。状態の追加または削除も原理的には可能ですが、\verb|DaqComponentBase|
+%% 自体の変更が必要になります。
+%% RTコンポーネントでは、"Active", "Inactive","Error" の3つの状態が定義されています。我々は、上記の
+%% DAQコンポーネントの4つの状態を図のようにRTコンポーネントの"Active"状態へマッピングを行いました。
 %% \begin{figure}[htbp]
 %%  \begin{center}
 %%   \includegraphics[width=100mm]{state-rtc-daq.eps}
-%%   \caption{\footnotesize ���ơ��ȥ��㡼��}
+%%   \caption{\footnotesize ステートチャート}
 %%   \label{state-rtc-daq.fig}
 %%  \end{center}
 %% \end{figure}
 
-\subsection{DAQ����ݡ��ͥ�ȤΥե����빽��}
-DAQ����ݡ��ͥ�ȳ�ȯ��ɬ�פʥե�����ˤĤ����������ޤ���
-�㤨�С�Skeleton �Ȥ���̾���Υ���ݡ��ͥ�Ȥ�ȯ���뤿��ˤϡ����Υե����뤬ɬ�פǤ���
-�����RT����ݡ��ͥ�ȤΥե����빽����ͳ�褹���ΤǤ���
+\subsection{DAQコンポーネントのファイル構成}
+DAQコンポーネント開発に必要なファイルについて説明します。
+例えば、Skeleton という名前のコンポーネントを開発するためには、次のファイルが必要です。
+これはRTコンポーネントのファイル構成に由来するものです。
 \begin{itemize}
 \item Skeleton.h
 \item Skeleton.cpp
@@ -617,20 +617,20 @@ DAQ����ݡ��ͥ�ȳ�ȯ��ɬ�פʥե�����ˤĤ����������ޤ���
 \item Makefile
 \end{itemize}
 
-Skeleton.h �ϡ�Skeleton���饹�Υإå��ե�����Ǥ���
-Skeleton.cpp �ˤ�Skeleton����ݡ��ͥ�Ȥγƾ��֤ǤΥ����å���������ޤ����ܺ٤�
-\ref{trans}���������ޤ���
-SkeletonComp.cpp �ϡ�Skeleton����ݡ��ͥ�ȤΥᥤ��ץ������Ǥ���
-�����ˤ��ΰ���ʬ�򼨤��ޤ���RTC::Manager ��RT����ݡ��ͥ�Ȥξ��������Ԥ����饹�Ǥ���
+Skeleton.h は、Skeletonクラスのヘッダファイルです。
+Skeleton.cpp にはSkeletonコンポーネントの各状態でのロジックを実装します。詳細は
+\ref{trans}で説明します。
+SkeletonComp.cpp は、Skeletonコンポーネントのメインプログラムです。
+下記にその一部分を示します。RTC::Manager はRTコンポーネントの情報管理を行うクラスです。
 \begin{itemize}
-\item \verb|manager->init(argc, argv)|�ˤ��config�ե�������ɤ߹��ߡ�Naming Service ��
-  ���������Ԥ��ޤ���
-\item \verb|manager->setModuleInitProc(MyModuleInit)|�ˤ�ꥳ��ݡ��ͥ�Ȥν����
-�ץ��������㤬���ꤵ��ޤ���
-\item \verb|manager->activateManager()|�ˤ�ꥳ��ݡ��ͥ�Ȥ�������Ԥ��ޤ���
-\item \verb|manager->runManager()|�ǥޥ͡�����Υᥤ��롼�פ�¹Ԥ��ޤ��� ���Υᥤ��
-�롼����Ǥϡ�CORBA ORB�Υ��٥�ȥ롼��������������ޤ����ǥե���ȤǤϡ�
-���Υ��ڥ졼�����ϥ֥��å����ޤ���
+\item \verb|manager->init(argc, argv)|によりconfigファイルの読み込み、Naming Service の
+  初期化等を行います。
+\item \verb|manager->setModuleInitProc(MyModuleInit)|によりコンポーネントの初期化
+プロシージャが設定されます。
+\item \verb|manager->activateManager()|によりコンポーネントの生成を行います。
+\item \verb|manager->runManager()|でマネージャのメインループを実行します。 このメイン
+ループ内では、CORBA ORBのイベントループ等が処理されます。デフォルトでは、
+このオペレーションはブロックします。
 \end{itemize}
 
 \begin{Verbatim}
@@ -660,14 +660,14 @@ SkeletonComp.cpp �ϡ�Skeleton����ݡ��ͥ�ȤΥᥤ��ץ������Ǥ���
   }
 \end{Verbatim}
 
-\subsection{���֤���Ӿ������ܤμ���}\label{trans}
-DAQ����ݡ��ͥ�Ȥ� \verb|DaqComponentBase|���饹�ˤϡ��������ܤκݤ˸ƤФ����дؿ���
-���ξ�����˷����֤��ƤФ����дؿ����������Ƥ��ޤ���DAQ����ݡ��ͥ�ȳ�ȯ�Ԥϡ�
-�����δؿ������������ƿ�������ǽ��DAQ����ݡ��ͥ�Ȥ���ޤ���
+\subsection{状態および状態遷移の実装}\label{trans}
+DAQコンポーネントの \verb|DaqComponentBase|クラスには、状態遷移の際に呼ばれるメンバ関数、
+その状態中に繰り返し呼ばれるメンバ関数が定義されています。DAQコンポーネント開発者は、
+それらの関数の中を実装して新しい機能のDAQコンポーネントを作ります。
 
-�� \ref{state-func.fig}�˾������ܤκݤ˸ƤФ��᥽�åɡ����ξ�����˷����֤��ƤФ��
-�᥽�åɤ򼨤��ޤ����ޤ��������ܤΥȥꥬ�Ȥʤ륳�ޥ�ɤ򼨤��ޤ���
-���ޥ�ɤϡ�DAQService.idl �˼��Τ褦�� enum ���������Ƥ��ޤ���
+図 \ref{state-func.fig}に状態遷移の際に呼ばれるメソッド、その状態中に繰り返し呼ばれる
+メソッドを示します。また状態遷移のトリガとなるコマンドを示します。
+コマンドは、DAQService.idl に次のように enum で定義されています。
 \begin{Verbatim}
   enum DAQCommand
   {
@@ -680,7 +680,7 @@ DAQ����ݡ��ͥ�Ȥ� \verb|DaqComponentBase|���饹�ˤϡ��������ܤκݤ˸ƤФ���
       CMD_NOP
   };
 \end{Verbatim}
-�ޤ������ޥ�ɤ��б�������֤ϡ����Τ褦�� enum ���������Ƥ��ޤ���
+また、コマンドに対応する状態は、次のように enum で定義されています。
 \begin{Verbatim}
   enum DAQLifeCycleState
   {
@@ -692,70 +692,70 @@ DAQ����ݡ��ͥ�Ȥ� \verb|DaqComponentBase|���饹�ˤϡ��������ܤκݤ˸ƤФ���
 \end{Verbatim}
 
 \begin{enumerate}
-\item DAQ����ݡ��ͥ�Ȥϵ�ư���ϡ�"LOADED" ���֤��Ե�����\\
-  ���ߤμ����Ǥϡ�"LOADED" ������ϡ�\verb|daq_dummy()|�������֤��ƤФ�롣
-  \verb|daq_dummy()|��
-  CPU����񤷤ʤ��褦��sleep()�ؿ���Ƥ�ǥ����ɥ���֤�¸����Ƥ��롣
+\item DAQコンポーネントは起動時は、"LOADED" 状態で待機状態\\
+  現在の実装では、"LOADED" 状態中は、\verb|daq_dummy()|が繰り返し呼ばれる。
+  \verb|daq_dummy()|は
+  CPUを消費しないようにsleep()関数を呼んでアイドル状態を実現している。
 
-\item "LOADED" �������"Configure"���ޥ�ɤ������"CONFIGURED"���֤�����\\
-  ���κݡ�\verb|daq_configure()|�����ٸƤФ�롣����ݡ��ͥ�Ȥ��Ф���ѥ�᡼����
-  �����Ԥ���
-  "CONFIGURED"���֤Ǥϡ�\verb|daq_dummy()|�������֤��ƤФ쥢���ɥ���֡�
+\item "LOADED" 状態中は"Configure"コマンドを受けて"CONFIGURED"状態へ遷移\\
+  その際、\verb|daq_configure()|が一度呼ばれる。コンポーネントに対するパラメータの
+  設定を行う。
+  "CONFIGURED"状態では、\verb|daq_dummy()|が繰り返し呼ばれアイドル状態。
 
-\item "CONFIGURED"�������"Start"���ޥ�ɤ�"RUNNING"���֤�����\\
-  ���κݡ�\verb|daq_start()|�����ٸƤФ�롣����ݡ��ͥ�Ȥ�Ϣ³ư���Ԥ����ν����
-  ���ν�����������롣
-  "RUNNING"������ϡ�\verb|daq_run()|�������֤��ƤФ�롣\verb|daq_run()|��
-  ����ݡ��ͥ�Ȥε�ǽ�Υ����å���������롣
+\item "CONFIGURED"状態中は"Start"コマンドで"RUNNING"状態へ遷移\\
+  その際、\verb|daq_start()|が一度呼ばれる。コンポーネントが連続動作を行う前の初期化
+  等の処理を実装する。
+  "RUNNING"状態中は、\verb|daq_run()|が繰り返し呼ばれる。\verb|daq_run()|に
+  コンポーネントの機能のロジックを実装する。
 
-\item "RUNNING"�������"Pause"���ޥ�ɤ�"PAUSED"���֤�����\\
-  ���κݡ�\verb|daq_pause()|�����ٸƤФ�롣����ݡ��ͥ�Ȥ�"PAUSED"���֤����ܤ�������
-  �Ԥ�������������롣"PAUSED"���֤Ǥ�\verb|daq_dummy()|�������֤��ƤФ쥢���ɥ���֡�
+\item "RUNNING"状態中は"Pause"コマンドで"PAUSED"状態へ遷移\\
+  その際、\verb|daq_pause()|が一度呼ばれる。コンポーネントが"PAUSED"状態へ遷移する前に
+  行う処理を実装する。"PAUSED"状態では\verb|daq_dummy()|が繰り返し呼ばれアイドル状態。
 
-\item "PAUSED"�������"Resume"���ޥ�ɤ�"RUNNING"���֤�����\\
-  ���κݡ�\verb|daq_resume()|�����ٸƤФ�롣����ݡ��ͥ�Ȥ�"RUNNING"���֤����ܤ���
-  ���˹Ԥ�������������롣
+\item "PAUSED"状態中は"Resume"コマンドで"RUNNING"状態へ遷移\\
+  その際、\verb|daq_resume()|が一度呼ばれる。コンポーネントが"RUNNING"状態へ遷移する
+  前に行う処理を実装する。
 
-\item "RUNNING"������� "Stop"���ޥ�ɤ�"CONFIGURED"���֤�����\\
-  ���κݡ�\verb|daq_stop()|�����ٸƤФ�롣����ݡ��ͥ�Ȥ�Ϣ³ư���λ���뤿���
-  ��������������롣
+\item "RUNNING"状態中は "Stop"コマンドで"CONFIGURED"状態へ遷移\\
+  その際、\verb|daq_stop()|が一度呼ばれる。コンポーネントが連続動作を終了するための
+  処理等を実装する。
 
-\item "CONFIGURED"�������"Unconfigure"���ޥ�ɤ�"LOADED"���֤����ܤ��ޤ���
-  ���κݡ�\verb|daq_unconfigure()|�����ٸƤФ�롣"CONFIGURED"�������
-  \verb|daq_dummy()|�������֤��ƤФ쥢���ɥ���֡�
+\item "CONFIGURED"状態中は"Unconfigure"コマンドで"LOADED"状態へ遷移します。
+  その際、\verb|daq_unconfigure()|が一度呼ばれる。"CONFIGURED"状態中は
+  \verb|daq_dummy()|が繰り返し呼ばれアイドル状態。
 \end{enumerate}
 
 \begin{figure}[htbp]
  \begin{center}
   \includegraphics[width=100mm]{state-func.eps}
-  \caption{DAQ����ݡ��ͥ�ȤΥ��ơ��ȥ��㡼��}
+  \caption{DAQコンポーネントのステートチャート}
   \label{state-func.fig}
  \end{center}
 \end{figure}
 
-\subsubsection{RUNNING���֤�ư��μ���}
-��ȯ����DAQ����ݡ��ͥ�Ȥε�ǽ�ʥᥤ������å��ˤ�������ޤ����㤨�С����Τ褦��ư���
-������Ԥ��ޤ���
+\subsubsection{RUNNING状態の動作の実装}
+開発するDAQコンポーネントの機能（メインロジック）を実装します。例えば、次のような動作の
+実装を行います。
 \begin{itemize}
-\item J-PARC MLF�ǻ��ͤ��Ƥ��� Gatherer����ݡ��ͥ�Ȥϡ��꡼�ɥ����ȡ��⥸�塼�뤫��
-  �ǡ�����������ƥǡ����˥إå��ȥեå����դ��Ƹ��ʤΥ���ݡ��ͥ�Ȥ���������
-\item Logger����ݡ��ͥ�Ȥϼ��������ǡ�������إå��ȥեå���������ƥե��������¸����
-\item Monitor����ݡ��ͥ�Ȥϼ��������ǡ�����ǥ����ɤ��ơ���̣�Τ���ʪ��������
-  �׻����ƥҥ��ȥ���ಽ����
+\item J-PARC MLFで仕様している Gathererコンポーネントは、リードアウト・モジュールから
+  データを取得してデータにヘッダとフッタを付けて後段のコンポーネントへ送信する
+\item Loggerコンポーネントは受信したデータからヘッダとフッタを取り除いてファイルへ保存する
+\item Monitorコンポーネントは受信したデータをデコードして、興味のある物理量等を
+  計算してヒストグラム化する
 \end{itemize}
 
-\subsection{���ޥ�ɤμ���}
-DAQ���ڥ졼��������������륳�ޥ�ɤμ����ϡ�\verb|DaqComponentBase::daq_do()|����� 
-\verb|get_command()|�ǹԤäƤ��ޤ�����������ҤΤ褦�ˡ������ӥ��ݡ��ȴ֤Υǡ���ž����
-CORBA�ˤ��¸�����Ƥ��ޤ������ߤΥ���ݡ��ͥ�Ȥξ��֡ʥ��ơ��ȡˤȼ����������ޥ��
-�ˤ�ꡢ�������ܤ�Ԥ��ޤ���
+\subsection{コマンドの受信}
+DAQオペレータから送信されるコマンドの受信は、\verb|DaqComponentBase::daq_do()|の中の 
+\verb|get_command()|で行っています。これは前述のように、サービスポート間のデータ転送が
+CORBAにより実現されています。現在のコンポーネントの状態（ステート）と受信したコマンド
+により、状態遷移を行います。
 
-\subsection{���ơ�����������}
-DAQ����ݡ��ͥ�Ȥϳƾ��֡��㤨�� "RUNNING"���֡ˤǤ����Ū��2����ˤˡ������ι�¤�ΤΥǡ���
-�򼫿ȤΥ��ơ������Ȥ��ƹ������ޤ�������Ū�ˤϡ�����ݡ��ͥ�Ȥ�̾�������֡ʥ��ơ��ȡˡ�
-���٥�ȿ�������ݡ��ͥ�ȤΥ��֡����ơ������Ǥ���
-������֤����̤ξ��֤����ܤ������ޤ�����̿Ū�ʥ��顼��ȯ���������ϡ����ơ���������ϡ�
-���Υ����ߥ󥰤ǹ�������ޤ���
+\subsection{ステータスの送信}
+DAQコンポーネントは各状態（例えば "RUNNING"状態）では定期的（2秒毎）に、下記の構造体のデータ
+を自身のステータスとして更新します。具体的には、コンポーネントの名前、状態（ステート）、
+イベント数、コンポーネントのサブ・ステータスです。
+ある状態から別の状態へ遷移した場合または致命的なエラーが発生した場合は、ステータス情報は、
+そのタイミングで更新されます。
 
 \begin{Verbatim}
   struct Status
@@ -767,56 +767,56 @@ DAQ����ݡ��ͥ�Ȥϳƾ��֡��㤨�� "RUNNING"���֡ˤǤ����Ū��2����ˤˡ������ι�
   };
 \end{Verbatim}
 
-\subsection{�ǡ���������}
-DAQ����ݡ��ͥ�Ȥϡ�Ǥ�դο��Υǡ��������ϥݡ��Ȥ���Ĥ��Ȥ��Ǥ��ޤ��������RT����ݡ��ͥ��
-��������Ѥ�����ǽ�Ǥ����桼������ȯ��Ԥʤ�����¿���Τϡ��ǡ������ȥ꡼��λ����Ȥʤ�
-������(source)�����ץ���ݡ��ͥ�ȤȽ����Ȥʤ륷��(sink)�����ץ���ݡ��ͥ�ȤǤ���
-�㤨�и��д��꡼�ɥ����ȥ⥸�塼�뤫��ǡ�����������ơ����ʤΥ���ݡ��ͥ�Ȥ���������Τ�
-�����������פǤ������ʤΥ���ݡ��ͥ�Ȥ���ǡ�����������ơ��ե��������¸���륳��ݡ��ͥ��
-��ǡ�����ǥ����ɤ��ƥҥ��ȥ�������ˤ��ƥ���饤���˥���Ԥʤ�����ݡ��ͥ�Ȥϥ��󥯥�����
-�Ǥ���
+\subsection{データ送受信}
+DAQコンポーネントは、任意の数のデータ入出力ポートを持つことができます。これはRTコンポーネント
+から受け継いだ機能です。ユーザが開発を行なう機会が多いのは、データストリームの始点となる
+ソース(source)タイプコンポーネントと終点となるシンク(sink)タイプコンポーネントです。
+例えば検出器やリードアウトモジュールからデータを取得して、後段のコンポーネントに送信するのが
+ソースタイプです。前段のコンポーネントからデータを受信して、ファイルに保存するコンポーネント
+やデータをデコードしてヒストグラム等にしてオンラインモニタを行なうコンポーネントはシンクタイプ
+です。
 
-\subsubsection{�ǡ�������}
-InPort ����ĥ���ݡ��ͥ�Ȥ�OutPort���ĥ���ݡ��ͥ�Ȥ���ǡ���������Ǥ��ޤ���
-InPort �ˤϴ�Ϣ�դ���줿��󥰥Хåե������ꡢOutPort�����������줿�ǡ����Ϥ��ΥХåե��˽񤭹��ޤ�
-�ޤ��������� \verb|read()| �ˤ�꥿���ॢ�����դ��Υ֥��å��⡼�ɤǥǡ������ɤ߹��ߤޤ�������˥ǡ�����
-�ɤ߹��ޤ줿���ϡ��֤��ͤ� \verb|true| �ˤʤ�ޤ���false �ξ��ϡ�\verb|check_inPort_status()|�ˤ��
-ž�����ơ�������Ĵ�٤ޤ���\verb|false| �ξ�硢\verb|check_inPort_status()|�ϡ�\verb|BUF_TIMEOUT|�ޤ���
-\verb|BUF_FATAL|���֤��ޤ��������ॢ���Ȥξ��ϥ�ȥ饤��Fatal�ξ��ϡ�\verb|fatal_error_report()|
-�ˤ����𤷤ޤ���
+\subsubsection{データ受信}
+InPort を持つコンポーネントはOutPortをもつコンポーネントからデータを受信できます。
+InPort には関連付けられたリングバッファがあり、OutPortから送信されたデータはこのバッファに書き込まれ
+ます。下記の \verb|read()| によりタイムアウト付きのブロックモードでデータを読み込みます。正常にデータが
+読み込まれた場合は、返り値は \verb|true| になります。false の場合は、\verb|check_inPort_status()|により
+転送ステータスを調べます。\verb|false| の場合、\verb|check_inPort_status()|は、\verb|BUF_TIMEOUT|または
+\verb|BUF_FATAL|を返します。タイムアウトの場合はリトライを、Fatalの場合は、\verb|fatal_error_report()|
+により報告します。
 
 \begin{Verbatim}
   bool ret = m_InPort.read()
 \end{Verbatim}
 
-\subsubsection{�ǡ�������}
-OutPort ����ĥ���ݡ��ͥ�Ȥ�InPort���ĥ���ݡ��ͥ�Ȥإǡ����������Ǥ��ޤ���
+\subsubsection{データ送信}
+OutPort を持つコンポーネントはInPortをもつコンポーネントへデータを送信できます。
 
-������ \verb|write()| �ˤ�꥿���ॢ�����դ��Υ֥��å��⡼�ɤǥǡ�����񤭹��ߤޤ�������˥ǡ�����
-�񤭹��ޤ줿���ϡ��֤��ͤ� \verb|true| �ˤʤ�ޤ���false �ξ��ϡ�\verb|check_outPort_status()|�ˤ��
-ž�����ơ�������Ĵ�٤ޤ���\verb|false| �ξ�硢\verb|check_outPort_status()|�ϡ�\verb|BUF_TIMEOUT|�ޤ���
-\verb|BUF_FATAL|���֤��ޤ��������ॢ���Ȥξ��ϥ�ȥ饤��Fatal�ξ��ϡ�\verb|fatal_error_report()|
-�ˤ����𤷤ޤ���
+下記の \verb|write()| によりタイムアウト付きのブロックモードでデータを書き込みます。正常にデータが
+書き込まれた場合は、返り値は \verb|true| になります。false の場合は、\verb|check_outPort_status()|により
+転送ステータスを調べます。\verb|false| の場合、\verb|check_outPort_status()|は、\verb|BUF_TIMEOUT|または
+\verb|BUF_FATAL|を返します。タイムアウトの場合はリトライを、Fatalの場合は、\verb|fatal_error_report()|
+により報告します。
 \begin{Verbatim}
   bool ret = m_OutPort.write()
 \end{Verbatim}
 
-\subsection{��̿Ū���顼��������}\label{fatal_error}
-DAQ����ݡ��ͥ�Ȥǡ���̿Ū�ʡ�Fatal�˥��顼�����������ϡ�
-\verb|fatal_error_report()| �Ȥ����ؿ���Ƥ��DAQ���ڥ졼����Fatal ���顼����𤷤ޤ���
+\subsection{致命的エラー報告の送信}\label{fatal_error}
+DAQコンポーネントで、致命的な（Fatal）エラーが起きた場合は、
+\verb|fatal_error_report()| という関数を呼んでDAQオペレータへFatal エラーを報告します。
 
 \begin{Verbatim}  
   void fatal_error_report(FatalType::Enum type, int code = -1)
   void fatal_error_report(FatalType::Enum type, const char* desc, int code = -1)
 \end{Verbatim}
 
-DAQ����ݡ��ͥ�ȼ��Ȥϡ������ɥ���֤Ȥʤ꼡�Υ��ޥ�ɤ��Ԥ��ޤ���
-����ϳ�DAQ����ݡ��ͥ�Ȥ������Բ�ǽ�ʥ��顼��ȯ���������ˡ����ξ����
-DAQ���ڥ졼������桼���ޤ��Ͼ�̥����ƥ�����������顼���б���ԤäƤ�餦����Ǥ���
-�㤨�С�"RUNNING"���֤Ǥ���С�"Stop���ޥ��"�ˤ�������ߤ������Ǥ���
-�ɤΤ褦�ʾ��֤�Fatal���顼�ˤ��뤫�ϡ�����ݡ��ͥ�ȳ�ȯ�Ԥ����ȤǷ��ޤ���
-�����Τ褦�ˡ�OutPort ����ǡ�����ž�������塢���Υ��ơ�����������å����ƥ��顼��
-���ϡ� \verb|fatal_error_report()| ��ƤӤޤ���
+DAQコンポーネント自身は、アイドル状態となり次のコマンドを待ちます。
+これは各DAQコンポーネントで復旧不可能なエラーが発生した場合に、その情報を
+DAQオペレータからユーザまたは上位システムに伝え、エラーの対応を行ってもらうためです。
+例えば、"RUNNING"状態であれば、"Stopコマンド"によりランを停止する等です。
+どのような状態をFatalエラーにするかは、コンポーネント開発者が自身で決めます。
+下記のように、OutPort からデータを転送した後、そのステータスをチェックしてエラーの
+場合は、 \verb|fatal_error_report()| を呼びます。
 \begin{Verbatim}
   if (check_outPort_status(m_out_status) == -1) {
       std::cerr << "### EchoReader: OutPort.write(): FATAL ERROR\n";
@@ -824,7 +824,7 @@ DAQ���ڥ졼������桼���ޤ��Ͼ�̥����ƥ�����������顼���б���ԤäƤ�餦����
   }
 \end{Verbatim}
 
-Fatal���顼�Υ����פϡ�FatalType.h �� enum �ˤ�겼���Τ褦��������Ƥ���ޤ���
+Fatalエラーのタイプは、FatalType.h で enum により下記のように定義してあります。
 
 \begin{Verbatim}
   namespace DAQMW
@@ -911,9 +911,9 @@ Fatal���顼�Υ����פϡ�FatalType.h �� enum �ˤ�겼���Τ褦��������Ƥ���ޤ���
   ...
 \end{Verbatim}
 
-���ߡ��桼�������ѤǤ��� CompFatalTypes �ϡ�\verb|USER_ERROR1|��\verb|USER_ERROR20| ��20�ĤǤ���
-1�Ĥ�DAQ����ݡ��ͥ����Ǻ���20�Ĥ�Fatal���顼��桼��������Ǥ��뤳�Ȥˤʤ�ޤ������顼�������Ȥ���
-ʸ��������Ǥ��ޤ���
+現在、ユーザが使用できる CompFatalTypes は、\verb|USER_ERROR1|〜\verb|USER_ERROR20| の20個です。
+1つのDAQコンポーネント中で最大20個のFatalエラーをユーザが定義できることになります。エラーの説明として
+文字列を指定できます。
 \begin{Verbatim}
   if (user_defined_fatal2) {
       std::cerr << "### MyComponent: FATAL ERROR\n";
@@ -921,64 +921,64 @@ Fatal���顼�Υ����פϡ�FatalType.h �� enum �ˤ�겼���Τ褦��������Ƥ���ޤ���
   }
 \end{Verbatim}
 
-\subsection{���֥ѥ�᡼�����굡ǽ}\label{comp-cond}
-DAQ����ݡ��ͥ�Ȥϡ�ɬ�פ���������֥ѥ�᡼���䥪��饤�󡦥�˥��ѤΥѥ�᡼����
-����ǥ�����󡦥ե�����ȸƤФ��XMLʸ�񤫤�������ơ����Υ������Ȼ������֤�����
-���뤳�Ȥ���ǽ�Ǥ���
-J-PARC MLF ������PSD���д�Ϥ�DAQ�����ƥ�Ǥϡ�NEUNET�Ȥ����꡼�ɥ����ȡ��⥸�塼���
-�Ф��ơ�PSD���д�ο���Υ���å����ɡ���٥�����ꤹ��ݤ˻��Ѥ��Ƥ��ޤ���
-���ε�ǽ��ɤΤ褦��DAQ����ݡ��ͥ�Ȥ˼������뤫�ϡ�\cite{Cond-manual}�򻲾Ȥ���
-����������
+\subsection{装置パラメータ設定機能}\label{comp-cond}
+DAQコンポーネントは、必要があれば装置パラメータやオンライン・モニタ用のパラメータを
+コンディション・ファイルと呼ばれるXML文書から取得して、ランのスタート時に装置へ設定
+することが可能です。
+J-PARC MLF 中性子PSD検出器系のDAQシステムでは、NEUNETというリードアウト・モジュールに
+対して、PSD検出器の信号のスレッショルド・レベルを設定する際に使用しています。
+この機能をどのようにDAQコンポーネントに実装するかは、\cite{Cond-manual}を参照して
+ください。
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{DAQ���ڥ졼���λ���}\label{daqop}
-DAQ���ڥ졼���ϡ�DAQ����ݡ��ͥ�Ȥ����椹�륳��ݡ��ͥ�ȤǤ���DAQ���ڥ졼����
-���Τ褦�ʵ�ǽ����äƤ��ޤ���
+\section{DAQオペレータの仕様}\label{daqop}
+DAQオペレータは、DAQコンポーネントを制御するコンポーネントです。DAQオペレータは
+次のような機能を持っています。
 \begin{itemize}
-\item ����ե����졼�����ե������XMLʸ��ˤˤ�륷���ƥॳ��ե����졼�����ǽ
-\item DAQ����ݡ��ͥ�ȤؤΥ��ޥ������/���ơ�����������ǽ
-\item ��DAQ����ݡ��ͥ�ȤؤΥѥ�᡼��������ǽ
-\item XML/HTTP �ץ��ȥ���ˤ�볰�������ƥ�ȤΥ��󥿡��ե�������ǽ
-\item ɸ�����Ϥ���Υ��ޥ�ɤˤ���󥳥�ȥ�����
+\item コンフィグレーションファイル（XML文書）によるシステムコンフィグレーション機能
+\item DAQコンポーネントへのコマンド送信/ステータス取得機能
+\item 各DAQコンポーネントへのパラメータ送信機能
+\item XML/HTTP プロトコルによる外部システムとのインターフェイス機能
+\item 標準入力からのコマンドによるランコントロール
 \end{itemize}
 
-DAQ���ڥ졼���ϡ��桼���ޤ��Ͼ�̥����ƥफ�饳�ޥ�ɤ�������ơ���DAQ����ݡ��ͥ��
-�����Τ���褦�߷פ���Ƥ��ޤ����ƥ��Ȥޤ��ϥǥХå��Ѥ�ɸ�����Ϥ��饳�ޥ�ɤ�������ơ�
-Ʊ�ͤ˳ƥ���ݡ��ͥ�Ȥإ��ޥ�ɤ����Τ���⡼�ɤ⤢��ޤ�������ʸ�ϤǤϤ��줾��
-��Web�⡼�ɡס��֥��󥽡��롦�⡼�ɡפȸƤ֤��Ȥˤ��ޤ���
-�嵭�Τ���¾�ε�ǽ�ˤĤ��Ƥϸ�Ҥ��ޤ���
+DAQオペレータは、ユーザまたは上位システムからコマンドを取得して、各DAQコンポーネント
+へ通知するよう設計されています。テストまたはデバッグ用に標準入力からコマンドを取得して、
+同様に各コンポーネントへコマンドを通知するモードもあります。この文章ではそれぞれ
+「Webモード」、「コンソール・モード」と呼ぶことにします。
+上記のその他の機能については後述します。
 
-\subsection{����ե����졼�����ǽ}\label{operator-config}
-\ref{config}�ǽҤ٤��褦�� XMLʸ��ˤ��DAQ�����ƥ�Υ���ե����졼����󤬲�ǽ�Ǥ���
-XMLʸ��ˤϡ����Τ褦��DAQ�����ƥ�ξ��󤬵��Ҥ���Ƥ��ޤ���
+\subsection{コンフィグレーション機能}\label{operator-config}
+\ref{config}で述べたように XML文書によるDAQシステムのコンフィグレーションが可能です。
+XML文書には、次のようなDAQシステムの情報が記述されています。
 \begin{itemize}
-\item DAQ���ڥ졼����IP���ɥ쥹
-\item ���Ѥ���DAQ����ݡ��ͥ�Ȥ�IP���ɥ쥹
-\item ���Ѥ���DAQ����ݡ��ͥ�ȤΥ��󥹥���̾
-\item �ġ���DAQ����ݡ��ͥ�Ȥ����Ѥ��� InPort, OutPort��̾��
-\item DAQ����ݡ��ͥ�ȴ֤�ή���ǡ������ȥ꡼�����뤿��ξ���
+\item DAQオペレータのIPアドレス
+\item 使用するDAQコンポーネントのIPアドレス
+\item 使用するDAQコンポーネントのインスタンス名
+\item 個々のDAQコンポーネントが使用する InPort, OutPortの名前
+\item DAQコンポーネント間を流れるデータストリームを決めるための情報
 \end{itemize}
 
-�����ƥࡦ����ե����졼�����Υ������󥹤ϼ��Τ褦�ˤʤäƤ��ޤ���
+システム・コンフィグレーションのシーケンスは次のようになっています。
 \begin{enumerate}
-\item DAQ����ݡ��ͥ�Ȥϵ�ư�塢RT����ݡ��ͥ�Ȥε�ǽ��Ȥ���ʬ���ȤΥ��󥹥���̾�� 
-  CORBA Naming Service����Ͽ���ޤ���
-\item DAQ���ڥ졼���ϵ�ư�女��ե����졼����󡦥ե�������ɤ߹��߹�ʸ���Ϥ�Ԥ��ޤ���
-\item DAQ���ڥ졼���ϡ�����ե����졼����󡦥ե�����˵��Ҥ���Ƥ���DAQ����ݡ��ͥ�Ȥ�
-Naming Service���䤤��碌�Ƥ��Υ��֥������ȡ���ե���󥹤�������ޤ������֥������ȡ�
-��ե���󥹤Ȥ�CORBA���֥������Ȥ��̤��뤿����Ѥ����뻲�ȤǤ���
-\item DAQ���ڥ졼���Ϥ��Υ��֥������ȡ���ե���󥹤�Ȥäơ�DAQ����ݡ��ͥ�Ȥ�
-  �ݡ��ȴ֤���³��Ԥ��ޤ�������ˤ�ꥳ��ݡ��ͥ�ȴ֤Υǡ������ȥ꡼��η�ϩ��
-  ��Ω���ޤ���
-\item DAQ���ڥ졼���ϼ��ȤΥ����ӥ��ݡ��Ȥȳ�DAQ����ݡ��ͥ�ȤΥ����ӥ��ݡ��Ȥ���³��
-  �Ԥ��ޤ�������ˤ�ꥳ�ޥ�����������ơ����������η�ϩ����Ω���ޤ������ҤΤ褦��
-  �ƥ���ݡ��ͥ�Ȥ��֥����ӥ��ץ��Х����פ�DAQ���ڥ졼�����֥����ӥ����󥷥塼�ޡפ�
-  �б����ޤ���
+\item DAQコンポーネントは起動後、RTコンポーネントの機能を使い自分自身のインスタンス名を 
+  CORBA Naming Serviceへ登録します。
+\item DAQオペレータは起動後コンフィグレーション・ファイルを読み込み構文解析を行います。
+\item DAQオペレータは、コンフィグレーション・ファイルに記述されているDAQコンポーネントを
+Naming Serviceへ問い合わせてそのオブジェクト・リファレンスを取得します。オブジェクト・
+リファレンスとはCORBAオブジェクトを識別するために用いられる参照です。
+\item DAQオペレータはそのオブジェクト・リファレンスを使って、DAQコンポーネントの
+  ポート間の接続を行います。これによりコンポーネント間のデータストリームの経路が
+  確立します。
+\item DAQオペレータは自身のサービスポートと各DAQコンポーネントのサービスポートの接続を
+  行います。これによりコマンド送信、ステータス受信の経路が確立します。前述のように
+  各コンポーネントが「サービスプロバイダ」でDAQオペレータが「サービスコンシューマ」に
+  対応します。
 \end{enumerate}
 
-�ޤ� DAQ���ڥ졼���ϡ�"Configure"���ޥ�ɤ�ƥ���ݡ��ͥ�Ȥ���������ݤˡ�����ե����졼�����
-���ե�����˽񤫤줿�ѥ�᡼����̾�����ͤȤ����ȤΥꥹ�Ȥˤ��Ƴƥ���ݡ��ͥ�Ȥ��������ޤ���
-%% �㤨�С�J-PARC MLF �����Ҥǻ��Ѥ��Ƥ��� config.xml �˼��Τ褦�ʵ��Ҥ����ä�����ͤ��ޤ���
+また DAQオペレータは、"Configure"コマンドを各コンポーネントに送信する際に、コンフィグレーション
+・ファイルに書かれたパラメータを名前と値という組のリストにして各コンポーネントへ送信します。
+%% 例えば、J-PARC MLF 中性子で使用している config.xml に次のような記述があった場合を考えます。
 %% \begin{Verbatim}
 %% <component cid="Gatherer0">
 %%    <hostAddr>192.168.1.206</hostAddr>
@@ -991,85 +991,85 @@ Naming Service���䤤��碌�Ƥ��Υ��֥������ȡ���ե���󥹤�������ޤ������֥���
 %%    </params>
 %% </component>
 %% \end{Verbatim}
-%% ���ξ�硢�ѥ�᡼���� NVList�Ȥ��Ƥ� {"daqId", "0"},{"srcAddr", "192.168.0.80"}�Ȥʤ�ޤ���
-%% "daqId"�ϡ�DAQ����ݡ��ͥ�Ȥ�ư���׻����� ID��"srcAddr"�ϡ�NEUNET�Ȥ��� PSD���д�
-%% �꡼�ɥ������ѥ⥸�塼��� IP���ɥ쥹�Ǥ���
-%% DAQ���ڥ졼�����顢NVList ��Gatherer�� "Configure"���ޥ�ɤȤȤ������졢Gatherer �ϡ�
-%% ��ʬ��ɬ�פʥѥ�᡼����̾�����ΤäƤ���Τ�  \verb|parse_params()|�Ȥ����ؿ��� "daqId",
-%% "srcAddr"�򥭡��˥ꥹ�Ȥ򸡺������ͤ�������ޤ���
+%% この場合、パラメータの NVListとしては {"daqId", "0"},{"srcAddr", "192.168.0.80"}となります。
+%% "daqId"は、DAQコンポーネントが動作する計算機の ID、"srcAddr"は、NEUNETという PSD検出器
+%% リードアウト用モジュールの IPアドレスです。
+%% DAQオペレータから、NVList がGathererに "Configure"コマンドとともに送られ、Gatherer は、
+%% 自分が必要なパラメータの名前を知っているので  \verb|parse_params()|という関数で "daqId",
+%% "srcAddr"をキーにリストを検索して値を取得します。
 
-\subsubsection{����ե����졼�����ե�����}\label{config-file}
-%����ե����졼����󡦥ե�����Υ������ޤ�������J-PARC MLF�����ҤǤλ�����ˤĤ��Ƥ�
-%\cite{Config-manual}�򻲾Ȥ��Ƥ���������
-DAQ�����ƥ�Υ���ե����졼�����˻��Ѥ���XMLʸ��ˤĤ����������ޤ���
-�Ϥ���˥���ե����졼�����ե�����ι�¤���ꤹ��XML�������ޥե�����(config.xsd)�ˤĤ����������ޤ���
-���˥���ե����졼�����ե�����δ�ñ����򼨤��ޤ���
-%%DAQ�ߥɥ륦�����Ǥϡ�DAQ�����ƥ�򵭽Ҥ��빭���Υǡ����١����Ȥ��ƽ��פʰ�̣������ޤ���
-%%����ե�����졼�����ե�����ε��Ҥˤ��DAQ�����ƥ�˻��Ѥ���DAQ����ݡ��ͥ�Ȥ����򤷡�
-%%�ޤ�DAQ����ݡ��ͥ�ȴ֤���³���ѹ����뤳�Ȥǽ����DAQ�����ƥ���ۤ��뤳�Ȥ��Ǥ��ޤ���
-%% ����ե����졼����󡦥ե�����Υ������ޤ� W3C��XML Schema �ǵ��Ҥ���Ƥ��ޤ���
-%% ����ե����졼����󡦥ե����뤬���äƤ������ϡ����Ѥ���DAQ����ݡ��ͥ�Ȥ�
-%% ̾���䥳��ݡ��ͥ�ȤΥݡ��Ⱦ���ư�����׻�����IP ���ɥ쥹���Ǥ���
-%% DAQ����ݡ��ͥ�Ȥ����椹��DAQ���ڥ졼���ϡ������ƥ൯ư�����Υե�����ξ���
-%% �ˤ��CORBA Naming Service ���䤤��碌�ƥ���ݡ��ͥ�ȤΥ��֥������ȡ���ե���󥹤�������ޤ���
-%% �����ƥ���ݡ��ͥ�ȴ֤Υǡ��������ϥݡ��ȴ֤���³��������ݡ��ͥ�ȴ֤Υǡ������ȥ꡼��η�ϩ���Ω���ޤ���
-%% ��DAQ����ݡ��ͥ�Ȥϡ�ʣ���Υѥ�᡼���������Ĥ��Ȥ��Ǥ�"Configure"
-%% ���ޥ����������DAQ���ڥ졼�������DAQ����ݡ��ͥ�Ȥ���������ޤ������Υѥ�᡼���ξ���� config.xml
-%% �˵��Ҥ��ޤ���
+\subsubsection{コンフィグレーションファイル}\label{config-file}
+%コンフィグレーション・ファイルのスキーマの説明やJ-PARC MLF中性子での使用例については
+%\cite{Config-manual}を参照してください。
+DAQシステムのコンフィグレーションに使用するXML文書について説明します。
+はじめにコンフィグレーションファイルの構造を規定するXMLスキーマファイル(config.xsd)について説明します。
+次にコンフィグレーションファイルの簡単な例を示します。
+%%DAQミドルウェアでは、DAQシステムを記述する広義のデータベースとして重要な意味を持ちます。
+%%コンフィギュレーションファイルの記述によりDAQシステムに使用するDAQコンポーネントを選択し、
+%%またDAQコンポーネント間の接続を変更することで柔軟にDAQシステムを構築することができます。
+%% コンフィグレーション・ファイルのスキーマは W3CのXML Schema で記述されています。
+%% コンフィグレーション・ファイルが持っている情報は、使用するDAQコンポーネントの
+%% 名前やコンポーネントのポート情報、動作させる計算機のIP アドレス等です。
+%% DAQコンポーネントを制御するDAQオペレータは、システム起動時このファイルの情報
+%% によりCORBA Naming Service に問い合わせてコンポーネントのオブジェクト・リファレンスを取得します。
+%% そしてコンポーネント間のデータ入出力ポート間を接続し、コンポーネント間のデータストリームの経路を確立します。
+%% 各DAQコンポーネントは、複数のパラメータ情報を持つことができ"Configure"
+%% コマンド投入時にDAQオペレータから各DAQコンポーネントへ送信されます。このパラメータの情報も config.xml
+%% に記述します。
 
-\subsubsection{����ե����졼�����ե�������XML��������}\label{config-schema}
-XML�Υ������޸���Ȥ��ƤϿ�����¸�ߤ��ޤ�����W3C�� XML Schema����Ѥ��Ƥ��ޤ���
-config.xml�Υ������� config.xsd ����Ͽ \ref{config.xsd}�˺ܤ��ޤ�����
-config.xml�ǻ��Ѳ�ǽ�ʥ�����ȤˤĤ����������ޤ���ɽ\ref{tag.tab}�˥������̾��
-�ޤȤ�ޤ�����
-��\ref{config-tree.fig}�ˤ��ι�¤�򼨤��ޤ���\verb|configInfo|�Ȥ���
-�롼�ȥ�����Ȥ���ˡ�\verb|daqOperator|��\verb|daqGroups|�Ȥ���������Ȥ�
-����ޤ���\verb|daqGroups|����ˤ�ʣ����\verb|daqGroup|��¸�ߤ��ޤ���
-\verb|daqGroup|��ʣ���� \verb|component|���鹽������ޤ���\verb|component|�ˤϡ�
+\subsubsection{コンフィグレーションファイル用XMLスキーマ}\label{config-schema}
+XMLのスキーマ言語としては数種類存在しますが、W3Cの XML Schemaを使用しています。
+config.xmlのスキーマ config.xsd を付録 \ref{config.xsd}に載せました。
+config.xmlで使用可能なエレメントについて説明します。表\ref{tag.tab}にエレメント名を
+まとめました。
+図\ref{config-tree.fig}にその構造を示します。\verb|configInfo|という
+ルートエレメントの中に、\verb|daqOperator|と\verb|daqGroups|というエレメントが
+あります。\verb|daqGroups|の中には複数の\verb|daqGroup|が存在します。
+\verb|daqGroup|は複数の \verb|component|から構成されます。\verb|component|には、
 \verb|hostAdd|, \verb|hostPort|, \verb|instName|, \verb|execPat|, \verb|confFile|,
-\verb|startOrd|, \verb|inPorts|, \verb|outPorts|, \verb|param| ������Ȥ�����ޤ���
-\verb|inPorts|, \verb|outPorts|, \verb|params| �Ϥ��줾�졢ʣ����\verb|inPort|,
-\verb|outPort|, \verb|param| ������ޤ���
-\verb|param|������Ȥϡ��ƥ���ݡ��ͥ�Ȥ���ͭ�ʥѥ�᡼�����򵭽Ҥ���ݤ˻��Ѥ��ޤ���
-���Υѥ�᡼����DAQ���ڥ졼������configure ���ޥ�ɤȰ���̾�����ͤΥꥹ�ȤȤ���
-�ƥ���ݡ��ͥ�Ȥ������ޤ����ƥ���ݡ��ͥ�Ȥϡ�����̾���򥭡��˥ꥹ�Ȥ����ͤ�����������Ԥ��ޤ���
-�ѥ�᡼���Ȥ�������ˤĤ��Ƥϸ�Ҥ��ޤ���
+\verb|startOrd|, \verb|inPorts|, \verb|outPorts|, \verb|param| エレメントがあります。
+\verb|inPorts|, \verb|outPorts|, \verb|params| はそれぞれ、複数の\verb|inPort|,
+\verb|outPort|, \verb|param| を持ちます。
+\verb|param|エレメントは、各コンポーネントに特有なパラメータ等を記述する際に使用します。
+このパラメータはDAQオペレータからconfigure コマンドと一緒に名前と値のリストとして
+各コンポーネントへ送られます。各コンポーネントは、その名前をキーにリストから値を取得し設定を行います。
+パラメータとその設定については後述します。
 
 \begin{table}[htbp]
 \begin{center}
 {\footnotesize
     \begin{tabular}{|l|c|l|}\hline
-      �������̾ & ° �� & �� ��\\ \hline %\hhline{|=|=|=|}
-      configInfo  &  �ʤ� & �롼�ȡ��������\\ \hline
-      daqOperator &  �ʤ� & �ҥ�����ȤȤ���1�Ĥ� hostAddr ����\\ \hline
-      daqGroups   &  �ʤ� & �ҥ�����ȤȤ���1�İʾ�� daqGroup ����\\ \hline
-      daqGroup    &  gid  & ���롼��ID��Ǥ�դ�ʸ����ǻ��ꤹ��\\ 
-                  &       & ��: \verb|<daqGroup gid="group0">|          \\ \hline
-      components  &  �ʤ� & �ҥ�����ȤȤ���1�İʾ�� daqComponent ����\\ \hline
-                  &       & MyModuleInit() �� \verb|manager->createComponent("xxx")|�ǻ��Ѥ���ʸ����\\
-      component   &  cid  & "xxx"��"0"���ղä���ʸ����\\ 
-                  &       & ��: \verb|<component cid="Reader0">|\\ \hline
-      hostAddr    &  �ʤ� & ����ݡ��ͥ�Ȥ�ư������ۥ��Ȥ�IP Address\\
-                  &       & ��: \verb|<hostAddr>192.168.1.206</hostAddr>|\\ \hline
-      hostPort    &  �ʤ� & ����ݡ��ͥ�ȤΥ�⡼�ȵ�ư�˻��Ѥ��� xinetd �Υݡ����ֹ� \\ 
-                  &       & ��: \verb|<hostPort>50000</hostPort>| 50000�֤���Ѥ���\\ \hline
-      instName    &  �ʤ� & ����ݡ��ͥ�ȤΥ��󥹥���̾��cid ��".rtc"���ղä���\\
-                  &       & ��:  \verb|<instName>Reader0.rtc</instName>| \\ \hline
-      execPath    &  �ʤ� & ����ݡ��ͥ�Ȥμ¹Է����ե���������Хѥ�\\ \hline
-      confFile    &  �ʤ� & ����ݡ��ͥ�Ȥλ��Ѥ��� rtc.conf �ե���������Хѥ�\\ \hline
-      startOrd    &  �ʤ� & ����ݡ��ͥ�ȤΥ������ȥ��ޥ�������κݤν���\\ \hline
-      inPorts     &  �ʤ� & �ҥ�����ȤȤ��� 0�İʾ��inPort ����\\ \hline
-                  &       & \verb|registerInPort ("xxx",m_InPort)|����Ͽ������InPort̾"xxx"�����\\
-      inPort      &  from & "from"�ˤ���³���� OutPort ����ꤹ�롣������\verb|cid| : \verb|outPort|\\
-                  &       & ��: \verb|<inPort from="Reader0:reader_out">monitor_in</inPort>|\\ \hline
-      outPorts    &  �ʤ� & �ҥ�����ȤȤ��� 0�İʾ��outPort ����\\ \hline
-      outPort     &  �ʤ� & \verb|registerOutPort("xxx",m_OutPort)| �ǻ��ꤷ��outPort̾"xxx"�����\\
-                  &       & ��: \verb|<outPort>reader_out</outPort>|\\ \hline
-      params      &  �ʤ� & �ҥ�����ȤȤ���0�İʾ�� param ����\\ \hline
-      param       &  pid  & pid °���˥�ˡ����ʥѥ�᡼��̾����ꤹ��\\
-                  &       & ��: �ǡ�����������IP���ɥ쥹\verb|<param pid="srcAddr">192.168.0.80</param>|\\ \hline
+      エレメント名 & 属 性 & 説 明\\ \hline %\hhline{|=|=|=|}
+      configInfo  &  なし & ルート・エレメント\\ \hline
+      daqOperator &  なし & 子エレメントとして1個の hostAddr をもつ\\ \hline
+      daqGroups   &  なし & 子エレメントとして1個以上の daqGroup をもつ\\ \hline
+      daqGroup    &  gid  & グループIDを任意の文字列で指定する\\ 
+                  &       & 例: \verb|<daqGroup gid="group0">|          \\ \hline
+      components  &  なし & 子エレメントとして1個以上の daqComponent をもつ\\ \hline
+                  &       & MyModuleInit() の \verb|manager->createComponent("xxx")|で使用した文字列\\
+      component   &  cid  & "xxx"に"0"を付加した文字列\\ 
+                  &       & 例: \verb|<component cid="Reader0">|\\ \hline
+      hostAddr    &  なし & コンポーネントを起動させるホストのIP Address\\
+                  &       & 例: \verb|<hostAddr>192.168.1.206</hostAddr>|\\ \hline
+      hostPort    &  なし & コンポーネントのリモート起動に使用する xinetd のポート番号 \\ 
+                  &       & 例: \verb|<hostPort>50000</hostPort>| 50000番を使用する\\ \hline
+      instName    &  なし & コンポーネントのインスタンス名。cid に".rtc"を付加する\\
+                  &       & 例:  \verb|<instName>Reader0.rtc</instName>| \\ \hline
+      execPath    &  なし & コンポーネントの実行形式ファイルの絶対パス\\ \hline
+      confFile    &  なし & コンポーネントの使用する rtc.conf ファイルの絶対パス\\ \hline
+      startOrd    &  なし & コンポーネントのスタートコマンド投入の際の順番\\ \hline
+      inPorts     &  なし & 子エレメントとして 0個以上のinPort をもつ\\ \hline
+                  &       & \verb|registerInPort ("xxx",m_InPort)|で登録したのInPort名"xxx"を指定\\
+      inPort      &  from & "from"には接続する OutPort を指定する。形式は\verb|cid| : \verb|outPort|\\
+                  &       & 例: \verb|<inPort from="Reader0:reader_out">monitor_in</inPort>|\\ \hline
+      outPorts    &  なし & 子エレメントとして 0個以上のoutPort をもつ\\ \hline
+      outPort     &  なし & \verb|registerOutPort("xxx",m_OutPort)| で指定したoutPort名"xxx"を指定\\
+                  &       & 例: \verb|<outPort>reader_out</outPort>|\\ \hline
+      params      &  なし & 子エレメントとして0個以上の param をもつ\\ \hline
+      param       &  pid  & pid 属性にユニークなパラメータ名を指定する\\
+                  &       & 例: データソースのIPアドレス\verb|<param pid="srcAddr">192.168.0.80</param>|\\ \hline
     \end{tabular}
-    \caption{����ե����졼����󡦥ե�����˻��Ѥ��륨�����}
+    \caption{コンフィグレーション・ファイルに使用するエレメント}
     \label{tag.tab}
 }
 \end{center}
@@ -1081,25 +1081,25 @@ config.xml�ǻ��Ѳ�ǽ�ʥ�����ȤˤĤ����������ޤ���ɽ\ref{tag.tab}�˥�������
    \includegraphics[width=55mm]{config-tree.eps}
   \end{center}
   %\vspace{5mm}
-  \caption{\footnotesize config.xml�ι�¤}
+  \caption{\footnotesize config.xmlの構造}
   \label{config-tree.fig}
 \end{wrapfigure}
 
-\subsubsection{����ե����졼��������}
-�����Ǥϴ�ñ�ʥ���ե����졼��������򼨤��ޤ���������ǵ��Ҥ���Ƥ��뤳�Ȥ���󤷤ޤ���
+\subsubsection{コンフィグレーションの例}
+ここでは簡単なコンフィグレーションの例を示します。この例で記述されていることを列挙します。
 \begin{itemize}
-\item ��������ۥ��Ⱦ��DAQ���ڥ졼������Ѥ��롣
-\item DAQ����ݡ��ͥ�Ȥϡ�Reader����ݡ��ͥ�ȡ�Monitor����ݡ��ͥ�Ȥ���Ѥ��롣
-\item Reader����ݡ��ͥ�Ȥϡ���������ۥ��Ⱦ�Τ�Τ���Ѥ��롣
-\item Reader����ݡ��ͥ�Ȥϡ�\verb|reader_out|�Ȥ���̾���ν��ϥݡ��Ȥ�1�Ļ��ġ����ϥݡ��ȤϤʤ���
-\item Monitor����ݡ��ͥ�Ȥϡ���������ۥ��Ⱦ�Τ�Τ���Ѥ��롣
-\item Monitor����ݡ��ͥ�Ȥ�\verb|monitor_in|�Ȥ���̾�������ϥݡ��Ȥ�1�Ļ��ġ����ϥݡ��ȤϤʤ���
-\item \verb|reader_out|�� \verb|monitor_in|����³����롣
-\item Reader����ݡ��ͥ�Ȥμ¹Է�����������ϡ�\verb|/home/daq/MyDaq/Reader/ReaderComp|�Ǥ��롣
-\item Monitor����ݡ��ͥ�Ȥμ¹Է�����������ϡ�\verb|/home/daq/MyDaq/Monitor/MonitorComp|�Ǥ��롣
-\item Reader����ݡ��ͥ�Ȥϡ�{\verb|srcAddr|, \verb|127.0.0.1|}, {\verb|srcPort|, \verb|2222|}�Ȥ���2�ȤΥѥ�᡼������äƤ��롣
-\item Monitor����ݡ��ͥ�Ȥϡ�{\verb|update_rate|, \verb|100|}�Ȥ���1�ȤΥѥ�᡼������äƤ��롣
-\item ����ݡ��ͥ�Ȥε�ư����ϡ�Monitor, Reader ����߽���Ϥ��εդǤ��롣
+\item ローカルホスト上のDAQオペレータを使用する。
+\item DAQコンポーネントは、Readerコンポーネント、Monitorコンポーネントを使用する。
+\item Readerコンポーネントは、ローカルホスト上のものを使用する。
+\item Readerコンポーネントは、\verb|reader_out|という名前の出力ポートを1つ持つ。入力ポートはない。
+\item Monitorコンポーネントは、ローカルホスト上のものを使用する。
+\item Monitorコンポーネントは\verb|monitor_in|という名前の入力ポートを1つ持つ。出力ポートはない。
+\item \verb|reader_out|と \verb|monitor_in|は接続される。
+\item Readerコンポーネントの実行形式がある場所は、\verb|/home/daq/MyDaq/Reader/ReaderComp|である。
+\item Monitorコンポーネントの実行形式がある場所は、\verb|/home/daq/MyDaq/Monitor/MonitorComp|である。
+\item Readerコンポーネントは、{\verb|srcAddr|, \verb|127.0.0.1|}, {\verb|srcPort|, \verb|2222|}という2組のパラメータを持っている。
+\item Monitorコンポーネントは、{\verb|update_rate|, \verb|100|}という1組のパラメータを持っている。
+\item コンポーネントの起動順序は、Monitor, Reader で停止順序はその逆である。
 
 \end{itemize}
 
@@ -1151,10 +1151,10 @@ config.xml�ǻ��Ѳ�ǽ�ʥ�����ȤˤĤ����������ޤ���ɽ\ref{tag.tab}�˥�������
   </configInfo>
 \end{Verbatim}
 
-\subsection{���ޥ�ɤ�������ǽ}
-DAQ���ڥ졼�������ҤΥ����ӥ��ݡ��Ȥ����Ѥ��Ƴƥ���ݡ��ͥ�Ȥإ��ޥ�ɤ��������ޤ���
-��DAQ����ݡ��ͥ�Ȥϼ����������ޥ�ɤȸ��ߤΥ��ơ��Ȥ��б������������ܤ�Ԥ��ޤ���
-���ߡ�DAQService.idl���������Ƥ��륳�ޥ�ɤ򼨤��ޤ���
+\subsection{コマンドの送信機能}
+DAQオペレータは前述のサービスポートを利用して各コンポーネントへコマンドを送信します。
+各DAQコンポーネントは受信したコマンドと現在のステートに対応した状態遷移を行います。
+現在、DAQService.idlで定義されているコマンドを示します。
 \begin{Verbatim}
   enum DAQCommand
   {
@@ -1168,75 +1168,75 @@ DAQ���ڥ졼�������ҤΥ����ӥ��ݡ��Ȥ����Ѥ��Ƴƥ���ݡ��ͥ�Ȥإ��ޥ�ɤ��������
   };
 \end{Verbatim}
 
-���ޥ�������Υ������󥹤ϡ������̤�Ǥ���
+コマンド送信のシーケンスは、次の通りです。
 \begin{enumerate}
-\item �桼�����饳�ޥ�ɤ��������
-\item DAQ����ݡ��ͥ�Ȥإ��ޥ�ɤ�����\label{2}
-\item DAQ����ݡ��ͥ�Ȥ���� acknowledge ���Ԥ�\label{3}
-\item ������ݡ��ͥ�Ȥ��Ф� \ref{2}, \ref{3} ��Ԥ�
+\item ユーザからコマンドを受信する
+\item DAQコンポーネントへコマンドを送信\label{2}
+\item DAQコンポーネントからの acknowledge を待つ\label{3}
+\item 全コンポーネントに対し \ref{2}, \ref{3} を行う
 \end{enumerate}
 
-\subsection{DAQ����ݡ��ͥ�ȡ����ơ������μ�����ǽ}
-DAQ����ݡ��ͥ�ȡ����ơ������μ����ϡ����ҤΥ����ӥ��ݡ��Ȥ����Ѥ��Ƴƥ���ݡ��ͥ�Ȥ�
-���ơ�������������ޤ���
-�ƥ���ݡ��ͥ�Ȥ���Υ��ơ���������ư���Ԥ����ϡ����Ҥ�DAQ���ڥ졼����ư��⡼��
-�ˤ��ۤʤ�ޤ���
-Web�⡼�ɤ�ư����ϡ����������ƥफ��Υ��ơ������������ޥ�ɤˤ��DAQ���ڥ졼����
-��DAQ����ݡ��ͥ�ȤΥ��ơ�������������Ƴ��������ƥ���������ޤ���
-���󥽡��롦�⡼��ư����ϡ�DAQ���ڥ졼�������Ū�ˡʸ��ߤμ����Ǥ�3����˳�DAQ
-����ݡ��ͥ�ȤΥ��ơ���������μ�����Ԥ���ɸ����Ϥ�ɽ����Ԥ��ޤ���
+\subsection{DAQコンポーネント・ステータスの取得機能}
+DAQコンポーネント・ステータスの取得は、前述のサービスポートを利用して各コンポーネントの
+ステータスを取得します。
+各コンポーネントからのステータス受信動作を行う条件は、前述のDAQオペレータの動作モード
+により異なります。
+Webモードで動作中は、外部システムからのステータス取得コマンドによりDAQオペレータが
+各DAQコンポーネントのステータスを取得して外部システムへ送信します。
+コンソール・モード動作中は、DAQオペレータは定期的に（現在の実装では3秒毎）各DAQ
+コンポーネントのステータス情報の取得を行い、標準出力へ表示を行います。
 
-%% \subsection{�����ƥࡦ���󥿡��ե�������ǽ}
+%% \subsection{システム・インターフェイス機能}
 %% \begin{wrapfigure}{r}{82mm}
 %%   \begin{center}
 %%    \includegraphics[width=80mm]{web-interface.eps}
 %%   \end{center}
 %%   %\vspace{-2mm}
-%%   \caption{�����ƥࡦ���󥿡��ե������γ�ǰ��}
+%%   \caption{システム・インターフェイスの概念図}
 %%   \label{web-interface.fig}
 %% \end{wrapfigure}
 
 
 
-%%���ε�ǽ���Ѥ�����󡦥���ȥ����롦�ѥͥ�䥪��饤�󡦥ҥ��ȥ�����ɽ���μ����ˤĤ��Ƥϻ���ʸ�� \cite{Web-GUI}�򻲾Ȥ��Ƥ���������
+%%この機能を用いたラン・コントロール・パネルやオンライン・ヒストグラムの表示の実装については参考文献 \cite{Web-GUI}を参照してください。
 
-\section{��������}
-OpenRTM-aist �ΥС�����󥢥åפ�DAQ�ߥɥ륦�����μ����β��ɤˤ�ꡢ�ܲ�����
-�����������Ƥ��Ť��ʤ��ǽ��������ޤ����ޤ��������ˤ����Ƥ���������ʬ�ǤϤʤ��ս�⤢��ޤ��Τǡ�
-����⤳�ε��Ѳ��������Ƥ�缡��������ͽ��Ǥ���
-�����ȡ�����˾������ޤ����餪�Τ餻����������
+\section{さいごに}
+OpenRTM-aist のバージョンアップやDAQミドルウェアの実装の改良により、本解説書で
+説明した内容が古くなる可能性があります。また、現状においても説明が十分ではない箇所もありますので、
+今後もこの技術解説書の内容を順次更新する予定です。
+コメント、ご要望がありましたらお知らせください。
 
 \addcontentsline{toc}{section}{References}
 \begin{thebibliography}{99}
 
- \bibitem{RTM}  ���ȵ������縦��� ��ǽ�����ƥฦ������ OpenRTM-aist�θ���Web�����Ȥ򻲾ȡ�\\
+ \bibitem{RTM}  産業技術総合研究所 知能システム研究部門 OpenRTM-aistの公式Webサイトを参照。\\
    \url{http://www.openrtm.org/OpenRTM-aist/}
  \bibitem{RTM-OMG} Robotic Technology Component (RTC),Version 1.0\\
    http://www.omg.org/spec/RTC/1.0/
  \bibitem{CHEP06} Y. Yasu, et al., Feasibility of data acquisition middleware based on robot technology, CHEP06, 2006.\\
    \url{http://daqmw.kek.jp/docs/chep06-ID192-paper.pdf}
- \bibitem{OVERVIEW} ��Ȱ��ˡ��� ˧����������ʡ���DAQ�ߥɥ륦�������סס�2008ǯ11��\\
+ \bibitem{OVERVIEW} 仲吉一男、安 芳次、千代浩司、「DAQミドルウェア概要」、2008年11月\\
    \url{http://daqmw.kek.jp/docs/daqmw-overview.pdf}
- \bibitem{RTM-book} Ĺ����Ƿ�����ܷ�Ƿ����ź�������֤Ϥ���ƤΥ���ݡ��ͥ�Ȼظ����ܥåȥ��ץꥱ�������ȯ�ס��������ߥ�˥�������󥺡�2008ǯ��ISBN978-4-8399-2900-8.
-\bibitem{Cond-manual} �� ˧������Condition�ǡ����١����γ�ȯ�ޥ˥奢��ס�2009ǯ7��\\
+ \bibitem{RTM-book} 長瀬雅之、中本啓之、池添明宏、「はじめてのコンポーネント指向ロボットアプリケーション開発」、毎日コミュニケーションズ、2008年、ISBN978-4-8399-2900-8.
+\bibitem{Cond-manual} 安 芳次、「Conditionデータベースの開発マニュアル」、2009年7月\\
 \url{http://daqmw.kek.jp/docs/ConditionDevManual.pdf}
-%%\bibitem{Config-manual} ��Ȱ��ˡ���DAQ�ߥɥ륦�����Υ����ƥࡦ����ե����졼�����ס�2009ǯ7��\\
+%%\bibitem{Config-manual} 仲吉一男、「DAQミドルウェアのシステム・コンフィグレーション」、2009年7月\\
 %%\url{http://greentea.kek.jp/daqm/docs/configuration.pdf}
-%%\bibitem{Web-GUI} �� ˧������WEB���Ѥ���DAQ�ߥɥ륦����GUI��ȯ�ޥ˥奢��ס�2009ǯ7��\\
+%%\bibitem{Web-GUI} 安 芳次、「WEBを用いたDAQミドルウェアGUI開発マニュアル」、2009年7月\\
 \url{http://greentea.kek.jp/daqm/docs/WebDAQGUI.pdf}
 \end{thebibliography}
 
 
 \newpage
 \appendix
-\section{XML/HTTP�ץ��ȥ���}\label{xmlhttp}
-DAQ�ߥɥ륦�����ȳ��������ƥ�Ȥ��̿��˻��Ѥ���XML/HTTP�ץ��ȥ����ɽ\ref{http1.tab}��ɽ\ref{http2.tab}�˼����ޤ���
+\section{XML/HTTPプロトコル}\label{xmlhttp}
+DAQミドルウェアと外部システムとの通信に使用するXML/HTTPプロトコルを表\ref{http1.tab}と表\ref{http2.tab}に示します。
 \begin{table}[htbp]
 \begin{center}
 {\scriptsize
     \begin{tabular}{|c|c|c|l|l|}\hline
-      ���ޥ��    & �׵�/���� & �᥽�å� & URI                      & HTTP �ܥǥ�\\ \hline
-                  & �׵�      & POST & http://xxx/daq/operatorPanel/run.py/Params & \verb|cmd="<?xml version="1.0" encoding="UTF-8" ?>|\\
+      コマンド    & 要求/応答 & メソッド & URI                      & HTTP ボディ\\ \hline
+                  & 要求      & POST & http://xxx/daq/operatorPanel/run.py/Params & \verb|cmd="<?xml version="1.0" encoding="UTF-8" ?>|\\
                   &           &      &                                            & \verb|<request>|\\ 
                   &           &      &                                            & \verb|  <params>config.xml</params>|\\
                   &           &      &                                            & \verb|</request>"|\\ \cline{2-5}
@@ -1245,7 +1245,7 @@ DAQ�ߥɥ륦�����ȳ��������ƥ�Ȥ��̿��˻��Ѥ���XML/HTTP�ץ��ȥ����ɽ\ref{http1.
                   &           &      &                                            & \verb|  <methodName>Params</methodName>|\\ 
                   &           &      &                                            & \verb|  <returnValue>|\\ 
                   &           &      &                                            & \verb|    <result>|\\ 
-      CONFIGURE   & ����      &      &                                            & \verb|      <status>OK</status>|\\ 
+      CONFIGURE   & 応答      &      &                                            & \verb|      <status>OK</status>|\\ 
                   &           &      &                                            & \verb|      <code>0</code>|\\ 
                   &           &      &                                            & \verb|      <className/>|\\ 
                   &           &      &                                            & \verb|      <name/>|\\ 
@@ -1257,7 +1257,7 @@ DAQ�ߥɥ륦�����ȳ��������ƥ�Ȥ��̿��˻��Ѥ���XML/HTTP�ץ��ȥ����ɽ\ref{http1.
                   &           &      &                                            & \verb|  </returnValue>|\\ 
                   &           &      &                                            & \verb|</response>|\\ \hline
 
-                  & �׵�      & POST & http://xxx/daq/operatorPanel/run.py/Begin  & \verb|cmd="<?xml version="1.0" encoding="UTF-8" ?>|\\
+                  & 要求      & POST & http://xxx/daq/operatorPanel/run.py/Begin  & \verb|cmd="<?xml version="1.0" encoding="UTF-8" ?>|\\
                   &           &      &                                            & \verb|<request>|\\ 
                   &           &      &                                            & \verb|  <runNo>1</runNo>|\\
                   &           &      &                                            & \verb|</request>"|\\ \cline{2-5}
@@ -1266,7 +1266,7 @@ DAQ�ߥɥ륦�����ȳ��������ƥ�Ȥ��̿��˻��Ѥ���XML/HTTP�ץ��ȥ����ɽ\ref{http1.
                   &           &      &                                            & \verb|  <methodName>Begin</methodName>|\\ 
                   &           &      &                                            & \verb|  <returnValue>|\\ 
                   &           &      &                                            & \verb|    <result>|\\ 
-      START       & ����      &      &                                            & \verb|      <status>OK</status>|\\ 
+      START       & 応答      &      &                                            & \verb|      <status>OK</status>|\\ 
                   &           &      &                                            & \verb|      <code>0</code>|\\ 
                   &           &      &                                            & \verb|      <className/>|\\ 
                   &           &      &                                            & \verb|      <name/>|\\ 
@@ -1277,14 +1277,14 @@ DAQ�ߥɥ륦�����ȳ��������ƥ�Ȥ��̿��˻��Ѥ���XML/HTTP�ץ��ȥ����ɽ\ref{http1.
                   &           &      &                                            & \verb|  </returnValue>|\\ 
                   &           &      &                                            & \verb|</response>|\\ \hline
 
-                  & �׵�      & POST & http://xxx/daq/operatorPanel/run.py/End    & \\ \cline{2-5}
+                  & 要求      & POST & http://xxx/daq/operatorPanel/run.py/End    & \\ \cline{2-5}
                   &           &      &                                            & \verb|<?xml version="1.0" encoding="UTF-8" ?>|\\
                   &           &      &                                            & \verb|<response>|\\ 
                   &           &      &                                            & \verb|  <methodName>End</methodName>|\\ 
                   &           &      &                                            & \verb|  <returnValue>|\\ 
                   &           &      &                                            & \verb|    <result>|\\ 
                   &           &      &                                            & \verb|      <status>OK</status>|\\ 
-      STOP        & ����      &      &                                            & \verb|      <code>0</code>|\\ 
+      STOP        & 応答      &      &                                            & \verb|      <code>0</code>|\\ 
                   &           &      &                                            & \verb|      <className/>|\\ 
                   &           &      &                                            & \verb|      <name/>|\\ 
                   &           &      &                                            & \verb|      <methodName/>|\\ 
@@ -1293,14 +1293,14 @@ DAQ�ߥɥ륦�����ȳ��������ƥ�Ȥ��̿��˻��Ѥ���XML/HTTP�ץ��ȥ����ɽ\ref{http1.
                   &           &      &                                            & \verb|    <result>|\\
                   &           &      &                                            & \verb|  </returnValue>|\\ 
                   &           &      &                                            & \verb|</response>|\\ \hline
-                  & �׵�      & POST & http://xxx/daq/operatorPanel/run.py/ResetPar & \\ \cline{2-5}
+                  & 要求      & POST & http://xxx/daq/operatorPanel/run.py/ResetPar & \\ \cline{2-5}
                   &           &      &                                            & \verb|<?xml version="1.0" encoding="UTF-8" ?>|\\
                   &           &      &                                            & \verb|<response>|\\ 
                   &           &      &                                            & \verb|  <methodName>ResetParams</methodName>|\\ 
                   &           &      &                                            & \verb|  <returnValue>|\\ 
                   &           &      &                                            & \verb|    <result>|\\ 
                   &           &      &                                            & \verb|      <status>OK</status>|\\ 
-    UNCONFIGURE   & ����      &      &                                            & \verb|      <code>0</code>|\\ 
+    UNCONFIGURE   & 応答      &      &                                            & \verb|      <code>0</code>|\\ 
                   &           &      &                                            & \verb|      <className/>|\\ 
                   &           &      &                                            & \verb|      <name/>|\\ 
                   &           &      &                                            & \verb|      <methodName/>|\\ 
@@ -1310,7 +1310,7 @@ DAQ�ߥɥ륦�����ȳ��������ƥ�Ȥ��̿��˻��Ѥ���XML/HTTP�ץ��ȥ����ɽ\ref{http1.
                   &           &      &                                            & \verb|  </returnValue>|\\ 
                   &           &      &                                            & \verb|</response>|\\ \hline
     \end{tabular}
-    \caption{���������ƥ�Ȥ��̿��˻��Ѥ���XML/HTTP(1)}\label{http1.tab}
+    \caption{外部システムとの通信に使用するXML/HTTP(1)}\label{http1.tab}
 }
 \end{center}
 \end{table}
@@ -1319,15 +1319,15 @@ DAQ�ߥɥ륦�����ȳ��������ƥ�Ȥ��̿��˻��Ѥ���XML/HTTP�ץ��ȥ����ɽ\ref{http1.
 \begin{center}
 {\scriptsize
     \begin{tabular}{|l|c|c|l|l|}\hline
-      ���ޥ��    & �׵�/���� & �᥽�å� & URI                      & HTTP �ܥǥ�\\ \hline
-                  & �׵�      & POST & http://xxx/daq/operatorPanel/run.py/Pause  & \\ \cline{2-5}
+      コマンド    & 要求/応答 & メソッド & URI                      & HTTP ボディ\\ \hline
+                  & 要求      & POST & http://xxx/daq/operatorPanel/run.py/Pause  & \\ \cline{2-5}
                   &           &      &                                            & \verb|<?xml version="1.0" encoding="UTF-8" ?>|\\
                   &           &      &                                            & \verb|<response>|\\ 
                   &           &      &                                            & \verb|  <methodName>Pause</methodName>|\\ 
                   &           &      &                                            & \verb|  <returnValue>|\\ 
                   &           &      &                                            & \verb|    <result>|\\ 
                   &           &      &                                            & \verb|      <status>OK</status>|\\ 
-    PAUSE         & ����      &      &                                            & \verb|      <code>0</code>|\\ 
+    PAUSE         & 応答      &      &                                            & \verb|      <code>0</code>|\\ 
                   &           &      &                                            & \verb|      <className/>|\\ 
                   &           &      &                                            & \verb|      <name/>|\\ 
                   &           &      &                                            & \verb|      <methodName/>|\\ 
@@ -1336,14 +1336,14 @@ DAQ�ߥɥ륦�����ȳ��������ƥ�Ȥ��̿��˻��Ѥ���XML/HTTP�ץ��ȥ����ɽ\ref{http1.
                   &           &      &                                            & \verb|    <result>|\\
                   &           &      &                                            & \verb|  </returnValue>|\\ 
                   &           &      &                                            & \verb|</response>|\\ \hline
-                  & �׵�      & POST & http://xxx/daq/operatorPanel/run.py/Restart & \\ \cline{2-5}
+                  & 要求      & POST & http://xxx/daq/operatorPanel/run.py/Restart & \\ \cline{2-5}
                   &           &      &                                            & \verb|<?xml version="1.0" encoding="UTF-8" ?>|\\
                   &           &      &                                            & \verb|<response>|\\ 
                   &           &      &                                            & \verb|  <methodName>Restart</methodName>|\\ 
                   &           &      &                                            & \verb|  <returnValue>|\\ 
                   &           &      &                                            & \verb|    <result>|\\ 
                   &           &      &                                            & \verb|      <status>OK</status>|\\ 
-    RESUME        & ����      &      &                                            & \verb|      <code>0</code>|\\ 
+    RESUME        & 応答      &      &                                            & \verb|      <code>0</code>|\\ 
                   &           &      &                                            & \verb|      <className/>|\\ 
                   &           &      &                                            & \verb|      <name/>|\\ 
                   &           &      &                                            & \verb|      <methodName/>|\\ 
@@ -1352,7 +1352,7 @@ DAQ�ߥɥ륦�����ȳ��������ƥ�Ȥ��̿��˻��Ѥ���XML/HTTP�ץ��ȥ����ɽ\ref{http1.
                   &           &      &                                            & \verb|    <result>|\\
                   &           &      &                                            & \verb|  </returnValue>|\\ 
                   &           &      &                                            & \verb|</response>|\\ \hline
-                  & �׵�      & GET  & http://xxx/daq/operatorPanel/run.py/Log    & \\ \cline{2-5}
+                  & 要求      & GET  & http://xxx/daq/operatorPanel/run.py/Log    & \\ \cline{2-5}
                   &           &      &                                            & \verb|<?xml version="1.0" encoding="UTF-8" ?>|\\
                   &           &      &                                            & \verb|<response>|\\ 
                   &           &      &                                            & \verb|  <methodName>Restart</methodName>|\\ 
@@ -1365,7 +1365,7 @@ DAQ�ߥɥ륦�����ȳ��������ƥ�Ȥ��̿��˻��Ѥ���XML/HTTP�ץ��ȥ����ɽ\ref{http1.
                   &           &      &                                            & \verb|      <methodName/>|\\ 
                   &           &      &                                            & \verb|      <messageEng/>|\\ 
                   &           &      &                                            & \verb|      <messageJpn/>|\\ 
-    GET LOG       & ����      &      &                                            & \verb|    <result>|\\
+    GET LOG       & 応答      &      &                                            & \verb|    <result>|\\
                   &           &      &                                            & \verb|    <logs>|\\
                   &           &      &                                            & \verb|      <log>|\\
                   &           &      &                                            & \verb|        <compName>READER</compName>|\\
@@ -1384,23 +1384,23 @@ DAQ�ߥɥ륦�����ȳ��������ƥ�Ȥ��̿��˻��Ѥ���XML/HTTP�ץ��ȥ����ɽ\ref{http1.
                   &           &      &                                            & \verb|</response>|\\ \hline
 
     \end{tabular}
-    \caption{���������ƥ�Ȥ��̿��˻��Ѥ���XML/HTTP(2)}\label{http2.tab}
+    \caption{外部システムとの通信に使用するXML/HTTP(2)}\label{http2.tab}
 
 }
 \end{center}
 \end{table}
 
 \newpage
-\section{DAQ����ݡ��ͥ�Ȥμ����˻��Ѥ���ؿ�����}\label{funclist}
+\section{DAQコンポーネントの実装に使用する関数一覧}\label{funclist}
 
 \newcommand{\myfunc}[3]{
 \vspace{2mm}
     \begin{tabular}{ c l }
-      ̾�� &             \\
+      名前 &             \\
            & \texttt{#1} \\
-      �� &             \\
+      書式 &             \\
            & \small{\texttt{#2}}\\
-      ���� &             \\
+      説明 &             \\
            & p.\texttt{#3} \\
     \end{tabular}
 \begin{center}
@@ -1410,9 +1410,9 @@ DAQ�ߥɥ륦�����ȳ��������ƥ�Ȥ��̿��˻��Ѥ���XML/HTTP�ץ��ȥ����ɽ\ref{http1.
 \end{center}
 }
 
-\myfunc{init\_command\_port - ���ޥ�ɥݡ��Ƚ����}{int init\_command\_port()}{\pageref{init} \ref{init}}
-\myfunc{init\_state\_table() - �������ܥơ��֥�ν����}{void init\_state\_table()}{\pageref{init} \ref{init}}
-\myfunc{set\_comp\_name(char{*} name) - ����ݡ��ͥ��̾����}{int set\_comp\_name(char{*} name)}{\pageref{init} \ref{init}}
+\myfunc{init\_command\_port - コマンドポート初期化}{int init\_command\_port()}{\pageref{init} \ref{init}}
+\myfunc{init\_state\_table() - 状態遷移テーブルの初期化}{void init\_state\_table()}{\pageref{init} \ref{init}}
+\myfunc{set\_comp\_name(char{*} name) - コンポーネント名設定}{int set\_comp\_name(char{*} name)}{\pageref{init} \ref{init}}
 \myfunc{inc\_sequence\_num() }{int inc\_sequence\_num() }{\pageref{seq} \ref{seq}}
 \myfunc{reset\_sequence\_num() }{int reset\_sequence\_num() }{\pageref{seq} \ref{seq}}
 \myfunc{get\_sequence\_num() }{unsigned long long get\_sequence\_num() }{\pageref{seq} \ref{seq}}
@@ -1434,7 +1434,7 @@ DAQ�ߥɥ륦�����ȳ��������ƥ�Ȥ��̿��˻��Ѥ���XML/HTTP�ץ��ȥ����ɽ\ref{http1.
 
 \newpage
 \section{config.xsd}\label{config.xsd}
-����ե����졼�����ե������XML�������ޤ򲼵��˼����ޤ���
+コンフィグレーションファイルのXMLスキーマを下記に示します。
 \VerbatimInput{config.xsd}
 
 \end{document}
