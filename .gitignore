@@ -1,0 +1,9 @@
+.depend
+*.o
+*.d
+*~
+*.dvi
+*.toc
+*.aux
+*.log
+technical-desc-1*.pdf
